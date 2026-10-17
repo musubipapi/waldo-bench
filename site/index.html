@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waldo Bench</title>
+<meta name="description" content="Nine image-input decision models search 66 Where&rsquo;s Waldo scenes, one 128-pixel tile at a time.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="stripe-band"></div>
+<header class="top"><div class="wrap"><a class="brand" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="hat-clip"><path d="M4 18C4 10 8 6.5 12 6.5S20 10 20 18Z"/></clipPath></defs><g clip-path="url(#hat-clip)"><rect width="24" height="24" fill="#fff"/><rect y="7.5" width="24" height="3" fill="#d8262c"/><rect y="13.5" width="24" height="3" fill="#d8262c"/></g><path d="M4 18C4 10 8 6.5 12 6.5S20 10 20 18Z" fill="none" stroke="#111" stroke-width="1.4"/><rect x="2.5" y="17.5" width="19" height="3.5" rx="1.2" fill="#d8262c" stroke="#111" stroke-width="1.4"/><circle cx="12" cy="5" r="2.4" fill="#d8262c" stroke="#111" stroke-width="1.4"/></svg>Waldo Bench</a><nav class="nav" aria-label="Sections"><a href="#leaderboard">Leaderboard</a><a href="#zoom">Charts</a><a href="#fooled">Fooled</a><a href="#scenes">Scenes</a><a href="play.html">Play</a><a href="#method">Methodology</a></nav><span class="spacer"></span><span class="meta">Last updated Oct 17, 2026</span></div></header>
+
+<main class="wrap">
+  <section id="intro" style="padding-top:56px">
+    <div class="kicker"><span class="tick"></span>Decision models · Visual search</div>
+    <div class="intro-row">
+      <div class="intro-text">
+        <h1>Can a decision model find Waldo?</h1>
+        <p class="lede">We gave nine image-input decision models 66 Where&rsquo;s Waldo scenes and a picture of Waldo to answer 1 question: &ldquo;Where&rsquo;s Waldo?&rdquo;</p>
+      </div>
+      <img class="intro-portrait" src="assets/reference.jpg" width="372" height="384" alt="Waldo, the reference picture every model is shown">
+    </div>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section id="leaderboard">
+    <div class="section-head">
+      <div>
+        <div class="kicker"><span class="tick"></span>01 · Leaderboard</div>
+        <h2 style="margin-top:10px">Who found him</h2>
+        <p>66 scenes, one search each. Select a model to step through the scenes it missed, with its pick next to the real Waldo.</p>
+      </div>
+    </div>
+    <div style="overflow-x:auto"><table class="board" id="board"></table></div>
+    <p class="note" id="board-note" style="margin-top:14px"></p>
+  </section>
+
+  <section id="zoom">
+    <div class="section-head">
+      <div>
+        <div class="kicker"><span class="tick"></span>02 · Charts</div>
+        <h2 style="margin-top:10px">Accuracy, cost, speed and confidence</h2>
+        <p>Smaller tiles make every model better at the job. At 128 px, here is what each model&rsquo;s found rate costs in dollars and seconds, and how well its confidence matches how often it is right.</p>
+      </div>
+    </div>
+    <div class="charts">
+      <div class="chart-card">
+        <h3>Found rate by tile size</h3>
+        <p class="sub">Each line is one model. Tiles are enlarged to 384 px before they are sent.</p>
+        <div class="chart" id="curve"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Cost efficiency: found rate against cost</h3>
+        <p class="sub">128 px tiles. Cost is the billed OpenRouter price to search one whole scene (log scale).</p>
+        <div class="chart" id="frontier"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Speed vs quality</h3>
+        <p class="sub">128 px tiles. Typical search is the median time to search one whole scene, with 16 tile requests in flight (Jev 1.14: one request).</p>
+        <div class="chart" id="speed"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Confidence alignment</h3>
+        <p class="sub">Each model&rsquo;s found rate against how sure it was, on average, of the tile it chose.</p>
+        <div class="chart" id="calibration"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fooled">
+    <div class="section-head">
+      <div>
+        <div class="kicker"><span class="tick"></span>03 · Fooled</div>
+        <h2 style="margin-top:10px">Where they looked instead</h2>
+        <p>Places where three or more models settled on the same wrong spot, next to the real Waldo in the same scene.</p>
+      </div>
+    </div>
+    <div class="cards" id="decoys"></div>
+    <div class="subhead">The hardest Waldos</div>
+    <div class="cards" id="hardest"></div>
+  </section>
+
+  <section id="scenes">
+    <div class="section-head">
+      <div>
+        <div class="kicker"><span class="tick"></span>04 · Scenes</div>
+        <h2 style="margin-top:10px">Every scene, every pick</h2>
+        <p>Pick a scene from the list to see where every model looked, then pick a model to see its choice up close. Bars under each scene count the models that found Waldo there.</p>
+      </div>
+    </div>
+    <div class="matrix-card" id="matrix-card">
+      <div class="subhead">Model &times; scene</div>
+      <p class="matrix-intro">Each row is a model and each column a scene, from the scene most models found to the one fewest did. Select a square to see that model&rsquo;s pick.</p>
+      <div class="matrix-wrap"><div class="matrix" id="matrix"></div></div>
+    </div>
+    <div class="subhead">Scene by scene</div>
+    <div class="browser" id="browser"></div>
+  </section>
+
+  <section id="method">
+    <div class="section-head">
+      <div>
+        <div class="kicker"><span class="tick"></span>05 · Methodology</div>
+        <h2 style="margin-top:10px">How we scored</h2>
+        <p>Everything that went into the numbers above.</p>
+      </div>
+    </div>
+    <dl class="method" id="method-list"></dl>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="stripe-band"></div>
+    <p id="credit"></p>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

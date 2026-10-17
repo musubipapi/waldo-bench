@@ -1,0 +1,21 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Downloaded and generated data. The IVSN scenes and Where's Waldo illustrations
+# must never be committed: they are not ours to redistribute.
+data/
+runs/
+site/data/
+site/assets/
+
+.DS_Store
+
+# Promo infographic tooling and render (not part of the benchmark)
+promo/

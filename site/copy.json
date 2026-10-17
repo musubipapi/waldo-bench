@@ -1,0 +1,84 @@
+{
+  "decoys": {
+    "decoy-4_2-760-160": {
+      "who": "Wenda",
+      "caption": "Wenda, peeking over a wall in the same hat and glasses. Every model chose her over Waldo."
+    },
+    "decoy-5_11-560-320": {
+      "who": "Wenda",
+      "caption": "Wenda, stripes and all, under the wall of clocks. Every model preferred her to Waldo's half-hidden head."
+    },
+    "decoy-3_11-520-40": {
+      "who": "Wenda",
+      "caption": "Wenda among the spear carriers, striped from hat to stockings, while Waldo hides down in the cave."
+    },
+    "decoy-4_1-400-80": {
+      "who": "Wenda",
+      "caption": "Wenda, grinning from behind a post on the film set. Only Luna looked past her to Waldo."
+    },
+    "decoy-4_5-320-680": {
+      "who": "Striped lookalike",
+      "caption": "Waldo's hat, glasses and striped sleeves on someone else, beside an aproned man. Only Luna found Waldo."
+    },
+    "decoy-2_12-840-240": {
+      "who": "Blond lookalike",
+      "caption": "A blond lookalike in the full outfit, on the same balcony as Waldo. Only d1-ultra told them apart."
+    },
+    "decoy-5_1-200-480": {
+      "who": "Wenda",
+      "caption": "Wenda, grinning beside a blonde woman in yellow, while Waldo is pressed against the top edge."
+    },
+    "decoy-5_4-880-560": {
+      "who": "Wenda",
+      "caption": "Wenda, among clowns and costumes. Waldo is up and to the left, beside a teddy bear."
+    },
+    "decoy-1_1-1200-120": {
+      "who": "Wenda",
+      "caption": "Wenda in the full hat, glasses and stripes. Her dark hair flicks out below her chin, which at tile size passes for a moustache."
+    },
+    "decoy-4_9-880-400": {
+      "who": "Kid in a bobble hat",
+      "caption": "A grinning kid in a Waldo bobble hat and striped scarf. No glasses, which apparently didn't matter."
+    },
+    "decoy-1_2-800-640": {
+      "who": "Wenda",
+      "caption": "Wenda among the runners on the beach. d1-ultra, the overall leader, fell for this one."
+    },
+    "decoy-6_3-80-320": {
+      "who": "Red hat and glasses",
+      "caption": "A grinning face in a red hat and glasses, half hidden behind a sea monster."
+    },
+    "decoy-3_4-840-360": {
+      "who": "Hooded crowd",
+      "caption": "No lookalike at all, just a scrum of ball players in red and white. Close enough, apparently."
+    }
+  },
+  "hardest": {
+    "1_1": "In plain sight against a white wall, carrying a spade, gear and a walking stick.",
+    "2_12": "In plain sight on a studio balcony beside a yellow bird costume, with lookalikes nearby.",
+    "3_3": "Tucked into a small crowd between a ribbed green roof and a yellow tower, face in shadow.",
+    "3_4": "Shoulder to shoulder with hooded ball players. Hat and stripes show; the face is a dark smudge.",
+    "3_11": "In a dark cave between blue-hooded hunters hauling rope. Head and a patch of stripes.",
+    "4_1": "Squeezed into a crowd behind a blond man with a spear: glasses, dark hair, a sliver of stripes.",
+    "4_2": "Only his face, peeking over a white wall beside a man in a red waistcoat.",
+    "4_4": "Just his head, bobbing among a column of soldiers in white kepis.",
+    "4_5": "Just his face, peering out at the edge of the set, right above a cameraman.",
+    "4_9": "Only his face, tucked under a man's elbow in a crowd behind a beige ledge.",
+    "5_1": "Pressed against the top edge: head and collar between a red-clad figure and a woman in a bonnet.",
+    "5_4": "Face and bobble hat, wedged between a man in yellow and a large teddy bear.",
+    "5_11": "Under a wall of clocks, only his head shows, cut off by the bottom edge among white-hatted men.",
+    "6_3": "One face in a tight rank of bearded sailors in white hats; the round glasses are the only tell.",
+    "6_9": "In a boatload of pirates under a Jolly Roger, face and hat behind a raised cutlass."
+  },
+  "models": {
+    "d1-ultra": "Most finds of the nine, and the only one to spot Waldo in scene 24. Still fell for Wenda on the beach in scene 2.",
+    "decider": "$0.0022 a scene and a 9.1-second median. Fooled by Wenda in scene 1, but not by her on the beach in scene 2.",
+    "clef": "The priciest at $0.0274 a scene, yet no more accurate than models costing under a tenth as much.",
+    "d1": "Half the price of d1-ultra at $0.0026 a scene, and fooled by nearly every decoy on this page.",
+    "jev": "One call per scene instead of one per tile, and the quickest typical search at 2.6 s. The only model to find Waldo in scenes 60 and 65.",
+    "clef-flash": "Despite the name, the slowest typical search at 11.4 s, for $0.0043 a scene.",
+    "clef-omni": "Second priciest at $0.0170 a scene. With d1-ultra, the only model to find Waldo in scenes 26 and 49.",
+    "span-02": "The cheapest at $0.0020 a scene. Picked the blond lookalike in scene 24 over the real Waldo.",
+    "luna": "The lowest found rate, but the only model to find Waldo in scenes 35 and 39, where most took a lookalike."
+  }
+}

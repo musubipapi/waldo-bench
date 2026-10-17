@@ -1,0 +1,907 @@
+{
+  "benchmark": "Waldo Bench",
+  "date": "2026-10-16",
+  "headline_tile_px": 128,
+  "scenes": 66,
+  "headline": [
+    {
+      "model": "d1-ultra",
+      "name": "Liquid d1-ultra",
+      "model_id": "liquid/d1-ultra",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 55,
+      "found_rate": 0.8333333333333334,
+      "found_ci95": [
+        0.7384615384615385,
+        0.9117647058823529
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.052390646014828,
+      "p95_search_s": 6.155836510297377,
+      "usd_per_scene": 0.005376244363635196,
+      "http_attempts": 14371,
+      "rank": 1,
+      "beaten_by": []
+    },
+    {
+      "model": "d1",
+      "name": "Liquid d1",
+      "model_id": "liquid/d1",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 48,
+      "found_rate": 0.7272727272727273,
+      "found_ci95": [
+        0.6153846153846154,
+        0.8333333333333334
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 5.981186792021617,
+      "p95_search_s": 11.39484152154182,
+      "usd_per_scene": 0.0026007418181817252,
+      "http_attempts": 14603,
+      "rank": 2,
+      "beaten_by": []
+    },
+    {
+      "model": "decider",
+      "name": "Decider V1.1 27B",
+      "model_id": "perplexity/pplx-decider-v1.1-27b",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6,
+        0.8153846153846154
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 9.100294917006977,
+      "p95_search_s": 16.762917989253765,
+      "usd_per_scene": 0.002158349999999562,
+      "http_attempts": 14392,
+      "rank": 3,
+      "beaten_by": [
+        "span-02"
+      ]
+    },
+    {
+      "model": "span-02",
+      "name": "Respan Span-02",
+      "model_id": "respan/span-02",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.5970149253731343,
+        0.8208955223880597
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.760624541551806,
+      "p95_search_s": 6.240717708191369,
+      "usd_per_scene": 0.001958028181818813,
+      "http_attempts": 17368,
+      "rank": 3,
+      "beaten_by": []
+    },
+    {
+      "model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "one-call",
+      "run": "runs/ivsn-jev-flat128-v2",
+      "timing_run": "runs/ivsn-jev-flat128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.61264685401693,
+      "p95_search_s": 4.864894239988644,
+      "usd_per_scene": 0.004094859363636363,
+      "http_attempts": 66,
+      "rank": 3,
+      "beaten_by": []
+    },
+    {
+      "model": "clef",
+      "name": "Clef",
+      "model_id": "cloudflare/clef",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 46,
+      "found_rate": 0.696969696969697,
+      "found_ci95": [
+        0.5882352941176471,
+        0.8
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 9.77339883352397,
+      "p95_search_s": 14.990554082964081,
+      "usd_per_scene": 0.027406472727265662,
+      "http_attempts": 14015,
+      "rank": 6,
+      "beaten_by": [
+        "d1-ultra",
+        "d1",
+        "span-02",
+        "decider",
+        "jev"
+      ]
+    },
+    {
+      "model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 45,
+      "found_rate": 0.6818181818181818,
+      "found_ci95": [
+        0.5691791044776119,
+        0.7878787878787878
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 11.419104249973316,
+      "p95_search_s": 16.813920594053343,
+      "usd_per_scene": 0.004339358181818343,
+      "http_attempts": 13958,
+      "rank": 7,
+      "beaten_by": [
+        "d1",
+        "span-02",
+        "decider",
+        "jev"
+      ]
+    },
+    {
+      "model": "clef-omni",
+      "name": "Clef Omni",
+      "model_id": "cloudflare/clef-omni",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 44,
+      "found_rate": 0.6666666666666666,
+      "found_ci95": [
+        0.5454545454545454,
+        0.7727272727272727
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 6.964761499548331,
+      "p95_search_s": 9.082865926699014,
+      "usd_per_scene": 0.017033884090907503,
+      "http_attempts": 13972,
+      "rank": 8,
+      "beaten_by": [
+        "d1-ultra",
+        "d1",
+        "span-02",
+        "jev"
+      ]
+    },
+    {
+      "model": "luna",
+      "name": "GPT-6 Luna Decisions",
+      "model_id": "openai/gpt-6-luna-decisions",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 35,
+      "found_rate": 0.5303030303030303,
+      "found_ci95": [
+        0.4116978609625669,
+        0.6470588235294118
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 5.1596277500502765,
+      "p95_search_s": 13.374798677221406,
+      "usd_per_scene": 0.01387097424242643,
+      "http_attempts": 16039,
+      "rank": 9,
+      "beaten_by": [
+        "d1-ultra",
+        "span-02",
+        "jev"
+      ]
+    }
+  ],
+  "head_to_head": [
+    {
+      "model": "d1",
+      "gap": 0.10606060606060606,
+      "ci95": [
+        0.04411764705882353,
+        0.18461538461538463
+      ]
+    },
+    {
+      "model": "decider",
+      "gap": 0.12121212121212122,
+      "ci95": [
+        0.03076923076923077,
+        0.21212121212121213
+      ]
+    },
+    {
+      "model": "span-02",
+      "gap": 0.12121212121212122,
+      "ci95": [
+        0.03076923076923077,
+        0.22058823529411764
+      ]
+    },
+    {
+      "model": "jev",
+      "gap": 0.12121212121212122,
+      "ci95": [
+        0.015384615384615385,
+        0.22727272727272727
+      ]
+    },
+    {
+      "model": "clef",
+      "gap": 0.13636363636363635,
+      "ci95": [
+        0.046153846153846156,
+        0.23076923076923078
+      ]
+    },
+    {
+      "model": "clef-flash",
+      "gap": 0.15151515151515152,
+      "ci95": [
+        0.06060606060606061,
+        0.2537313432835821
+      ]
+    },
+    {
+      "model": "clef-omni",
+      "gap": 0.16666666666666666,
+      "ci95": [
+        0.08820332480818416,
+        0.25757575757575757
+      ]
+    },
+    {
+      "model": "luna",
+      "gap": 0.30303030303030304,
+      "ci95": [
+        0.18181818181818182,
+        0.4307692307692308
+      ]
+    }
+  ],
+  "verdict": {
+    "leader": "d1-ultra",
+    "leader_clear": true,
+    "budget": "span-02",
+    "significantly_better_than_budget": [
+      "d1-ultra"
+    ]
+  },
+  "baselines": {
+    "random_tile": {
+      "384": 0.14747474747474748,
+      "192": 0.03664567755476846,
+      "128": 0.019203689804824994
+    },
+    "middle_tile": 0.015151515151515152
+  },
+  "all_entries": [
+    {
+      "model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-v1",
+      "timing_run": "runs/ivsn-reference-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 25,
+      "found_rate": 0.3787878787878788,
+      "found_ci95": [
+        0.26153846153846155,
+        0.4925373134328358
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.4077356669586152,
+      "p95_search_s": 1.2700153647747356,
+      "usd_per_scene": 0.0008130207272727275,
+      "http_attempts": 1008
+    },
+    {
+      "model": "decider",
+      "name": "Decider V1.1 27B",
+      "model_id": "perplexity/pplx-decider-v1.1-27b",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-v1",
+      "timing_run": "runs/ivsn-reference-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 32,
+      "found_rate": 0.48484848484848486,
+      "found_ci95": [
+        0.36363636363636365,
+        0.6153846153846154
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.6666420004912652,
+      "p95_search_s": 5.107318250025855,
+      "usd_per_scene": 0.0001512000000000022,
+      "http_attempts": 1008
+    },
+    {
+      "model": "luna",
+      "name": "GPT-6 Luna Decisions",
+      "model_id": "openai/gpt-6-luna-decisions",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-v1",
+      "timing_run": "runs/ivsn-reference-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 27,
+      "found_rate": 0.4090909090909091,
+      "found_ci95": [
+        0.2923076923076923,
+        0.5303030303030303
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.48320089548360556,
+      "p95_search_s": 1.1996849482820835,
+      "usd_per_scene": 0.0008720727272727113,
+      "http_attempts": 1008
+    },
+    {
+      "model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-v1",
+      "timing_run": "runs/ivsn-reference-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 27,
+      "found_rate": 0.4090909090909091,
+      "found_ci95": [
+        0.2923076923076923,
+        0.5303030303030303
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.2406304585165344,
+      "p95_search_s": 2.397377624438377,
+      "usd_per_scene": 0.0003133963636363583,
+      "http_attempts": 1008
+    },
+    {
+      "model": "clef",
+      "name": "Clef",
+      "model_id": "cloudflare/clef",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-v1",
+      "timing_run": "runs/ivsn-reference-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 34,
+      "found_rate": 0.5151515151515151,
+      "found_ci95": [
+        0.4,
+        0.6307692307692307
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.365467499999795,
+      "p95_search_s": 2.3635368227260187,
+      "usd_per_scene": 0.001979345454545416,
+      "http_attempts": 1009
+    },
+    {
+      "model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-v1",
+      "timing_run": "runs/ivsn-reference-t192-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 44,
+      "found_rate": 0.6666666666666666,
+      "found_ci95": [
+        0.5507246376811594,
+        0.7846153846153846
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.38130272901617,
+      "p95_search_s": 2.5323415412276518,
+      "usd_per_scene": 0.003775082818181867,
+      "http_attempts": 4681
+    },
+    {
+      "model": "decider",
+      "name": "Decider V1.1 27B",
+      "model_id": "perplexity/pplx-decider-v1.1-27b",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-v1",
+      "timing_run": "runs/ivsn-reference-t192-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6,
+        0.8153846153846154
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 5.3862992290523835,
+      "p95_search_s": 9.817773604212562,
+      "usd_per_scene": 0.0006916500000000124,
+      "http_attempts": 4611
+    },
+    {
+      "model": "luna",
+      "name": "GPT-6 Luna Decisions",
+      "model_id": "openai/gpt-6-luna-decisions",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-v1",
+      "timing_run": "runs/ivsn-reference-t192-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 26,
+      "found_rate": 0.3939393939393939,
+      "found_ci95": [
+        0.27692307692307694,
+        0.5151515151515151
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.850205187452957,
+      "p95_search_s": 2.755605875281617,
+      "usd_per_scene": 0.004048909090909182,
+      "http_attempts": 4681
+    },
+    {
+      "model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-v1",
+      "timing_run": "runs/ivsn-reference-t192-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 42,
+      "found_rate": 0.6363636363636364,
+      "found_ci95": [
+        0.5151515151515151,
+        0.7538461538461538
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.888871437462512,
+      "p95_search_s": 7.619556958699832,
+      "usd_per_scene": 0.001433601818181787,
+      "http_attempts": 4612
+    },
+    {
+      "model": "clef",
+      "name": "Clef",
+      "model_id": "cloudflare/clef",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-v1",
+      "timing_run": "runs/ivsn-reference-t192-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 44,
+      "found_rate": 0.6666666666666666,
+      "found_ci95": [
+        0.5586990950226245,
+        0.7761194029850746
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.3324938124860637,
+      "p95_search_s": 4.976598010485759,
+      "usd_per_scene": 0.009054327272727009,
+      "http_attempts": 4612
+    },
+    {
+      "model": "clef-omni",
+      "name": "Clef Omni",
+      "model_id": "cloudflare/clef-omni",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-new-models-v1",
+      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 43,
+      "found_rate": 0.6515151515151515,
+      "found_ci95": [
+        0.5384615384615384,
+        0.7611940298507462
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.6255503540160134,
+      "p95_search_s": 3.6240332292509265,
+      "usd_per_scene": 0.005627515909091465,
+      "http_attempts": 4611
+    },
+    {
+      "model": "d1",
+      "name": "Liquid d1",
+      "model_id": "liquid/d1",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-new-models-v1",
+      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 41,
+      "found_rate": 0.6212121212121212,
+      "found_ci95": [
+        0.5074626865671642,
+        0.7384615384615385
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.2700658119865693,
+      "p95_search_s": 6.125643468665658,
+      "usd_per_scene": 0.0008215963636363388,
+      "http_attempts": 4611
+    },
+    {
+      "model": "d1-ultra",
+      "name": "Liquid d1-ultra",
+      "model_id": "liquid/d1-ultra",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-new-models-v1",
+      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 50,
+      "found_rate": 0.7575757575757576,
+      "found_ci95": [
+        0.6461538461538462,
+        0.8507462686567164
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.7072112294845283,
+      "p95_search_s": 2.6063246150151826,
+      "usd_per_scene": 0.0017253523636364724,
+      "http_attempts": 4611
+    },
+    {
+      "model": "span-02",
+      "name": "Respan Span-02",
+      "model_id": "respan/span-02",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t192-new-models-v1",
+      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 43,
+      "found_rate": 0.6515151515151515,
+      "found_ci95": [
+        0.5384615384615384,
+        0.7611940298507462
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.511422291980125,
+      "p95_search_s": 2.888924707775004,
+      "usd_per_scene": 0.0005260731818181386,
+      "http_attempts": 4611
+    },
+    {
+      "model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 192,
+      "method": "one-call",
+      "run": "runs/ivsn-jev-flat192-v1",
+      "timing_run": "runs/ivsn-jev-flat192-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 43,
+      "found_rate": 0.6515151515151515,
+      "found_ci95": [
+        0.5303030303030303,
+        0.7692307692307693
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.1176023955922574,
+      "p95_search_s": 2.3124013957276475,
+      "usd_per_scene": 0.0014745360000000002,
+      "http_attempts": 66
+    },
+    {
+      "model": "decider",
+      "name": "Decider V1.1 27B",
+      "model_id": "perplexity/pplx-decider-v1.1-27b",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6,
+        0.8153846153846154
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 9.100294917006977,
+      "p95_search_s": 16.762917989253765,
+      "usd_per_scene": 0.002158349999999562,
+      "http_attempts": 14392,
+      "rank": 3,
+      "beaten_by": [
+        "span-02"
+      ]
+    },
+    {
+      "model": "clef",
+      "name": "Clef",
+      "model_id": "cloudflare/clef",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 46,
+      "found_rate": 0.696969696969697,
+      "found_ci95": [
+        0.5882352941176471,
+        0.8
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 9.77339883352397,
+      "p95_search_s": 14.990554082964081,
+      "usd_per_scene": 0.027406472727265662,
+      "http_attempts": 14015,
+      "rank": 6,
+      "beaten_by": [
+        "d1-ultra",
+        "d1",
+        "span-02",
+        "decider",
+        "jev"
+      ]
+    },
+    {
+      "model": "d1-ultra",
+      "name": "Liquid d1-ultra",
+      "model_id": "liquid/d1-ultra",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 55,
+      "found_rate": 0.8333333333333334,
+      "found_ci95": [
+        0.7384615384615385,
+        0.9117647058823529
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.052390646014828,
+      "p95_search_s": 6.155836510297377,
+      "usd_per_scene": 0.005376244363635196,
+      "http_attempts": 14371,
+      "rank": 1,
+      "beaten_by": []
+    },
+    {
+      "model": "clef-omni",
+      "name": "Clef Omni",
+      "model_id": "cloudflare/clef-omni",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 44,
+      "found_rate": 0.6666666666666666,
+      "found_ci95": [
+        0.5454545454545454,
+        0.7727272727272727
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 6.964761499548331,
+      "p95_search_s": 9.082865926699014,
+      "usd_per_scene": 0.017033884090907503,
+      "http_attempts": 13972,
+      "rank": 8,
+      "beaten_by": [
+        "d1-ultra",
+        "d1",
+        "span-02",
+        "jev"
+      ]
+    },
+    {
+      "model": "span-02",
+      "name": "Respan Span-02",
+      "model_id": "respan/span-02",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.5970149253731343,
+        0.8208955223880597
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.760624541551806,
+      "p95_search_s": 6.240717708191369,
+      "usd_per_scene": 0.001958028181818813,
+      "http_attempts": 17368,
+      "rank": 3,
+      "beaten_by": []
+    },
+    {
+      "model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 45,
+      "found_rate": 0.6818181818181818,
+      "found_ci95": [
+        0.5691791044776119,
+        0.7878787878787878
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 11.419104249973316,
+      "p95_search_s": 16.813920594053343,
+      "usd_per_scene": 0.004339358181818343,
+      "http_attempts": 13958,
+      "rank": 7,
+      "beaten_by": [
+        "d1",
+        "span-02",
+        "decider",
+        "jev"
+      ]
+    },
+    {
+      "model": "d1",
+      "name": "Liquid d1",
+      "model_id": "liquid/d1",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 48,
+      "found_rate": 0.7272727272727273,
+      "found_ci95": [
+        0.6153846153846154,
+        0.8333333333333334
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 5.981186792021617,
+      "p95_search_s": 11.39484152154182,
+      "usd_per_scene": 0.0026007418181817252,
+      "http_attempts": 14603,
+      "rank": 2,
+      "beaten_by": []
+    },
+    {
+      "model": "luna",
+      "name": "GPT-6 Luna Decisions",
+      "model_id": "openai/gpt-6-luna-decisions",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/ivsn-reference-t128-v1",
+      "timing_run": "runs/ivsn-reference-t128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 35,
+      "found_rate": 0.5303030303030303,
+      "found_ci95": [
+        0.4116978609625669,
+        0.6470588235294118
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 5.1596277500502765,
+      "p95_search_s": 13.374798677221406,
+      "usd_per_scene": 0.01387097424242643,
+      "http_attempts": 16039,
+      "rank": 9,
+      "beaten_by": [
+        "d1-ultra",
+        "span-02",
+        "jev"
+      ]
+    },
+    {
+      "model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "one-call",
+      "run": "runs/ivsn-jev-flat128-v2",
+      "timing_run": "runs/ivsn-jev-flat128-v1",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.61264685401693,
+      "p95_search_s": 4.864894239988644,
+      "usd_per_scene": 0.004094859363636363,
+      "http_attempts": 66,
+      "rank": 3,
+      "beaten_by": []
+    }
+  ],
+  "not_included": {
+    "inception/mercury-decide": "The provider rate-limited even one request at a time.",
+    "scaledown/classify-1": "The endpoint rejects images, although the catalog lists image input."
+  },
+  "notes": [
+    "Every model is scored on one pass.",
+    "Jev 1.14's answers and cost come from a pass run at 23:49 EDT on 2026-10-16, when TypeSafe answered about 1.2 s slower; its typical search time comes from its earlier pass at 14:13 EDT, close to the other models' 15:17 EDT run (timing_from).",
+    "Searches that hit a provider error were run again in full until they finished (resume --redo-failed). On 2026-10-17, 14 searches slower than 3x their model's median time (provider stalls) were also run again in full (resume --redo-slow 3); none changed found or missed."
+  ]
+}
