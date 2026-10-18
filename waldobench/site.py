@@ -76,19 +76,15 @@ def model_picks(entry, cases_by_page):
     if entry["method"] in ("one-call", "zoom"):
         timing = ROOT / entry["timing_run"]
         timed = {(r["page"], r["repeat"]): r["wall_s"] for r in read_jsonl(timing / "searches.jsonl")}
-        box_s = defaultdict(float)  # older runs also asked an unscored Box question; leave its time out
-        for call in read_jsonl(timing / "calls.jsonl"):
-            if call["step"] == "box":
-                box_s[call["page"], call["repeat"]] += call["latency_s"]
         for row in read_jsonl(run / "searches.jsonl"):
-            if row["repeat"] == 0:
-                chosen = row.get("chosen_tile", row.get("level1_tile"))  # runs before the cleanup said "level1"
-                picks[row["page"]] = {"tile": chosen, "found": bool(row["found"]), "complete": chosen is not None,
-                                      "seconds": timed[row["page"], 0] - box_s[row["page"], 0],
-                                      # A Choice gives a share of one vote over all tiles, not a probability: shown as "–".
-                                      "confidence": None}
-        for row in read_jsonl(run / "searches.jsonl"):  # zoom: its vote among the small tiles inside the chosen large one
-            if row["repeat"] == 0 and row.get("probabilities"):
+            if row["repeat"] != 0:
+                continue
+            chosen = row.get("chosen_tile")
+            picks[row["page"]] = {"tile": chosen, "found": bool(row["found"]), "complete": chosen is not None,
+                                  "seconds": timed[row["page"], 0],
+                                  # A Choice gives a share of one vote over all tiles, not a probability: shown as "–".
+                                  "confidence": None}
+            if row.get("probabilities"):  # zoom: its vote among the small tiles inside the chosen large one
                 heat.update(row["probabilities"])
         for call in read_jsonl(run / "calls.jsonl") if entry["method"] == "one-call" else []:
             if call["step"].startswith("choice") and call["repeat"] == 0 and isinstance(call["response"], dict):

@@ -29,7 +29,7 @@ from .openrouter import usage_cost
 
 SEED = 20261016
 RESAMPLES = 4000
-PASSES = 1  # every model is scored on one pass; extra passes in older runs are ignored
+PASSES = 1  # score one pass; a later pass in the same folder is ignored
 
 
 def answer_calls(calls, method):
@@ -38,7 +38,7 @@ def answer_calls(calls, method):
     the model when it works, not how reliable its provider is."""
     if method == "parallel":
         scored, unit = (lambda c: c.get("kind") == "search"), (lambda c: c["case_id"])
-    else:  # the Choice ("choice-all"; "choice-192-all" in one older run; zoom: "choice-coarse" and "choice-fine") or the batched yes/no request
+    else:  # Choice (choice-all; zoom adds choice-coarse and choice-fine) or the batched yes/no request (nouls-all)
         scored, unit = (lambda c: c.get("step", "").startswith("choice") or c.get("step") == "nouls-all"), (lambda c: (c["page"], c["step"]))
     last = {}
     for c in sorted(calls, key=lambda c: c["started_at"]):  # later requests replace earlier ones
@@ -78,18 +78,11 @@ def scene_rows(run: Path, method: str):
     rows, cost, attempts = [], defaultdict(float), defaultdict(int)
     calls = read_jsonl(run / "calls.jsonl")
     if method in ("one-call", "zoom"):
-        # Runs made before the cleanup also asked an unscored Box question after the Choice: leave its time out.
-        box_s = defaultdict(float)
-        for call in calls:
-            if call["step"] == "box" and call.get("latency_s") is not None:
-                box_s[call["page"], call["repeat"]] += call["latency_s"]
         for row in read_jsonl(run / "searches.jsonl"):
             if row["repeat"] < PASSES:
                 rows.append({"model": "jev", "repeat": row["repeat"], "page": row["page"], "id": row["id"],
-                             "found": bool(row["found"]), "complete": "chosen_tile" in row or "level1_tile" in row,
-                             "wall_s": row["wall_s"] - box_s[row["page"], row["repeat"]]})
+                             "found": bool(row["found"]), "complete": "chosen_tile" in row, "wall_s": row["wall_s"]})
         for call in calls:
-            # The scored request is the Choice ("choice-all"; "choice-192-all" in one older run).
             if call["step"].startswith("choice") and call["repeat"] < PASSES:
                 attempts["jev"] += 1
     elif method == "batched":
