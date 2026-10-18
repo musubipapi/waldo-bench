@@ -1,1 +1,1 @@
-"""Waldo Bench: can image-input decision models find Waldo? See README.md."""
+"""Waldo Bench: how well can image-input decision models find Waldo? See README.md."""

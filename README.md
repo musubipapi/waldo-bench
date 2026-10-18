@@ -1,6 +1,6 @@
 # Waldo Bench
 
-**Can a decision model find Waldo?**
+**How well can a decision model find Waldo?**
 
 Waldo Bench tests image-input *decision models* on a children's puzzle: find Waldo in a crowded
 Where's Waldo scene. Decision models (also called System One models) do not write text. They answer

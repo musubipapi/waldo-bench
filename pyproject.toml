@@ -1,7 +1,7 @@
 [project]
 name = "waldo-bench"
 version = "0.1.0"
-description = "Waldo Bench: can image-input decision models find Waldo? Accuracy, cost and speed on 66 Where's Waldo scenes."
+description = "Waldo Bench: how well can image-input decision models find Waldo? Accuracy, cost and speed on 66 Where's Waldo scenes."
 requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.28,<1",

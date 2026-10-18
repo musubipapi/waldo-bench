@@ -14,7 +14,7 @@ STRIDE = {384: 288, 192: 144, 128: 80}  # tiles overlap so Waldo is never cut in
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="waldobench", description="Waldo Bench: can image-input decision models find Waldo?")
+    parser = argparse.ArgumentParser(prog="waldobench", description="Waldo Bench: how well can image-input decision models find Waldo?")
     steps = parser.add_subparsers(dest="step", required=True)
 
     step = steps.add_parser("extract", help="unpack the Waldo images from the IVSN archive")
