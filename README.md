@@ -6,43 +6,52 @@ Waldo Bench tests image-input *decision models* on a children's puzzle: find Wal
 Where's Waldo scene. Decision models (also called System One models) do not write text. They answer
 typed questions, such as yes/no or "pick one of these options", and return a probability.
 
-We gave nine of these models 66 scenes and a picture of Waldo. Each scene is cut into small tiles, and
+We gave eleven of these models 66 scenes and a picture of Waldo. Each scene is cut into small tiles, and
 each model has to choose the tile that holds Waldo. We count how often it is right, what it costs, and
 how long it takes.
 
 ## Results
 
-One pass per model. All models were called through
-[OpenRouter's Decisions API](https://openrouter.ai/docs).
+One pass per model: a one-shot test. Rows that found Waldo equally often share a rank; the cheaper, then
+the faster, comes first. All models were called through
+[OpenRouter's Decisions API](https://openrouter.ai/docs). Jev 1.14 has 3 rows, one per way of asking it
+(see [Why Jev 1.14 has 3 rows](#why-jev-114-has-3-rows)).
 
-| Rank | Model | Found | Likely range | Cost per scene | Typical search |
+| Rank | Model | Found | Likely range | Cost per scene | Median time |
 |---:|---|---|---|---:|---:|
-| 1 | Liquid d1-ultra | 55/66 (83%) | 74–91% | $0.0054 | 4.1 s |
-| 2 | Liquid d1 | 48/66 (73%) | 62–83% | $0.0026 | 6.0 s |
-| 3 | Decider V1.1 27B | 47/66 (71%) | 60–82% | $0.0022 | 9.1 s |
-| 3 | Respan Span-02 | 47/66 (71%) | 60–82% | $0.0020 | 3.8 s |
-| 3 | Jev 1.14 | 47/66 (71%) | 60–82% | $0.0041 | 2.6 s |
-| 6 | Clef | 46/66 (70%) | 59–80% | $0.0274 | 9.8 s |
-| 7 | Clef Flash | 45/66 (68%) | 57–79% | $0.0043 | 11.4 s |
-| 8 | Clef Omni | 44/66 (67%) | 55–77% | $0.0170 | 7.0 s |
-| 9 | GPT-6 Luna Decisions | 35/66 (53%) | 41–65% | $0.0139 | 5.2 s |
+| 1 | Liquid d1-ultra | 53/66 (80%) | 71–89% | $0.0052 | 3.36 s |
+| 2 | Liquid d1 | 49/66 (74%) | 64–85% | $0.0025 | 4.52 s |
+| 3 | Jev 1.14 (yes/no, batched) | 48/66 (73%) | 62–83% | $0.0051 | 1.54 s |
+| 3 | Jev 1.14 | 48/66 (73%) | 62–83% | $0.0113 | 2.39 s |
+| 5 | Decider Flash V1.2 | 47/66 (71%) | 59–82% | $0.0010 | 2.61 s |
+| 5 | Respan Span-02 | 47/66 (71%) | 61–82% | $0.0016 | 3.31 s |
+| 5 | Mercury Decide | 47/66 (71%) | 61–82% | $0.0020 | 4.75 s |
+| 5 | Decider V1.2 | 47/66 (71%) | 59–82% | $0.0021 | 4.59 s |
+| 9 | Clef | 46/66 (70%) | 58–80% | $0.0274 | 8.19 s |
+| 10 | Jev 1.14 (Choice) | 45/66 (68%) | 58–79% | $0.0041 | 1.51 s |
+| 10 | Clef Flash | 45/66 (68%) | 56–79% | $0.0043 | 13.55 s |
+| 12 | Clef Omni | 44/66 (67%) | 55–77% | $0.0170 | 6.02 s |
+| 13 | GPT-6 Luna Decisions | 35/66 (53%) | 41–65% | $0.0121 | 3.13 s |
 | – | *Random tile* | *1.9%* | | | |
 | – | *Always the middle tile* | *1.5%* | | | |
 
-**Overall: Liquid d1-ultra.** It finds Waldo most often, and its lead holds against every other model
-when we compare them scene by scene. The closest, Liquid d1, is 11 points behind (95% interval: 4 to 18).
+**Most found: Liquid d1-ultra.** It finds Waldo most often, but its lead is not clear: Liquid d1 is 6 points
+behind (95% interval: −2 to 15).
 
-**On a budget: Respan Span-02.** It is the cheapest model, at $0.0020 a scene, and finds Waldo 71% of the
-time. Only d1-ultra is clearly more accurate.
+**On a budget: Decider Flash V1.2.** It is the cheapest model, at $0.0010 a scene, and finds Waldo 71% of
+the time. No model is clearly more accurate.
 
 Other findings:
 
-- **Smaller tiles help.** For the five models we ran at three tile sizes, the average found rate goes
-  from 44% (384 px tiles) to 62% (192 px) to 67% (128 px). Over the same change, a random guess gets
-  almost 8 times worse (14.7% to 1.9%).
-- **The most common mistake is Wenda**, Waldo's look-alike friend (same hat, glasses and stripes). In two scenes, all nine models chose her instead of Waldo.
-- **Most models are more confident than accurate.** d1 is on average 91% sure of its pick but right 73%
-  of the time. Decider (71% sure, right 71%) and d1-ultra (85% sure, right 83%) are the best calibrated.
+- **Smaller tiles help.** Averaged over the 11 models (1 request per tile), the found rate goes from 45%
+  (384 px tiles) to 64% (192 px) to 70% (128 px). Over the same change, a random guess gets almost
+  8 times worse (14.7% to 1.9%).
+- **The most common mistake is Wenda**, Waldo's look-alike friend (same hat, glasses and stripes). In one
+  scene, every model chose her instead of Waldo.
+- **Most models are more confident than accurate.** d1 is on average 91% sure of its pick but right 74%
+  of the time. Decider V1.2 (71% sure, right 71%) is the best calibrated.
+- **Some models vary.** Asked again with the same requests, d1-ultra, d1 and Jev 1.14 give slightly
+  different answers (2 to 3 scenes per run). The other models give the same answers.
 
 `results/waldo-bench-v1/` has the full numbers: `results.json`, `leaderboard.csv`, and `curve.csv`
 (every model at every tile size).
@@ -64,8 +73,8 @@ tile is enlarged to 384 × 384 pixels.
 
 ### The question
 
-Eight of the nine models get **one request per tile**. The request holds two images, a reference
-picture of Waldo and then the tile, and one yes/no question (a *Noul*):
+Every model gets **one request per tile**. The request holds two images, a reference picture of Waldo
+and then the tile, and one yes/no question (a *Noul*):
 
 > The first image is a reference picture of Waldo (Wally). The second image is a crop from a crowded
 > illustrated scene. Is Waldo, the same character as in the reference, in the second image? He is
@@ -73,14 +82,23 @@ picture of Waldo and then the tile, and one yes/no question (a *Noul*):
 > red-and-white cap are visible. Other people in red-and-white stripes, and striped objects, are not Waldo.
 
 The model returns P(yes) for each tile. Its answer for the scene is the tile with the highest P(yes).
-Up to 16 tile requests run at the same time.
+Each model runs alone, one scene at a time, with 16 tile requests at a time.
 
-**Jev 1.14 gets one request per scene.** We call each model the way its maker documents, and
-TypeSafe's guide for searching a large image is a single *Choice* question with the tiles as options.
-So Jev's request holds the whole scene, the reference picture in the instructions, and every tile of
-the scene as an option. The tiles, the reference picture, and the wording are the same as for the
-other models. Jev is the only model here that reads images inside a question and its options, and
-that accepts all of a scene's tiles (about 211 images) in one request.
+### Why Jev 1.14 has 3 rows
+
+We run every model every way its API allows. All 11 models can take one tile per request, so every model
+has that row. Only Jev 1.14 can also take a whole scene in one request, because it reads an image inside
+each question. The other models do not, or accept only a few images per request. So Jev 1.14 has two
+more rows, each run one scene at a time:
+
+- **Yes/no, batched:** one request per scene, with the picture of Waldo once and one yes/no question per
+  tile. It is scored like the per-tile method.
+- **Choice:** one request per scene, with all tiles of the scene as the options. TypeSafe documents this
+  method for large images.
+
+The tiles, picture and wording are the same in every method. Decider Flash V1.2 can also take a whole
+scene, but Perplexity rate-limited those requests so often that the test was not fair, so it has only its
+per-tile row.
 
 Before any scored request, each model must pass a short check that shows it reads every image it is
 sent, in the right order.
@@ -89,14 +107,14 @@ sent, in the right order.
 
 - **Found:** the chosen tile overlaps the box around Waldo. When two tiles are equally likely, a fixed
   hash breaks the tie. The hash is the same for every model and does not look at the answer.
-- **Likely range:** the 95% interval of the found rate. We re-draw the 65 source pictures at random,
-  with repeats, 4,000 times, and keep the middle 95% of the results. With only 66 scenes, luck matters,
-  so ranges that overlap a lot are too close to call.
+- **Likely range:** the 95% interval of the found rate. We re-draw the scenes at random, with repeats,
+  4,000 times, and keep the middle 95% of the results. With only 66 scenes, luck matters, so ranges that
+  overlap a lot are too close to call.
 - **Head-to-head:** the same re-drawing, done for two models at once on the gap between them.
-- **Cost:** what OpenRouter billed (`usage.cost`), divided by the number of scenes.
-- **Typical search:** the median time to search one whole scene. Jev 1.14's time comes from an earlier
-  pass the same day, run close in time to the other models; during its scored pass TypeSafe answered
-  about 1.2 s slower.
+- **Cost:** what OpenRouter billed (`usage.cost`) for the requests behind the answers, per scene.
+  Failed attempts and searches we ran again are left out.
+- **Median time:** the time to search one whole scene, counting only successful requests. We measure
+  speed when the model works, not how reliable its provider is.
 - Each model is pinned to one provider, with no fallback.
 - A search that hit a provider error, or stalled (took more than 3 times its model's median time), was run
   again in full. Every model finished all 66 scenes. The rule looks only at time, never at the answer.
@@ -107,22 +125,26 @@ sent, in the right order.
 |---|---|---|
 | Liquid d1-ultra | `liquid/d1-ultra` | Liquid |
 | Liquid d1 | `liquid/d1` | Liquid |
-| Decider V1.1 27B | `perplexity/pplx-decider-v1.1-27b` | Perplexity |
+| Decider V1.2 | `perplexity/pplx-decider-v1.2` | Perplexity |
+| Decider Flash V1.2 | `perplexity/pplx-decider-flash-v1.2` | Perplexity |
 | Respan Span-02 | `respan/span-02` | Respan |
 | Jev 1.14 | `typesafe/jev-1.14` | TypeSafe |
 | Clef | `cloudflare/clef` | Cloudflare |
 | Clef Flash | `cloudflare/clef-flash` | Cloudflare |
 | Clef Omni | `cloudflare/clef-omni` | Cloudflare |
 | GPT-6 Luna Decisions | `openai/gpt-6-luna-decisions` | OpenAI |
+| Mercury Decide | `inception/mercury-decide` | Inception |
 
-Not included: Inception Mercury Decide (the provider rate-limited even one request at a time) and
-ScaleDown Classify-1 (the endpoint rejects images).
+Not included: ScaleDown Classify-1 (the endpoint rejects images). Decider V1.1 27B was in the first
+results, but OpenRouter retired it on 18 October 2026, so its results cannot be repeated; Decider V1.2
+and Decider Flash V1.2 replace it. Mercury Decide was left out on 16 October because its provider
+rate-limited every request; it works now and is included.
 
 ## Run it yourself
 
 You need Python 3.11 or newer, [uv](https://docs.astral.sh/uv/), and an
 [OpenRouter API key](https://openrouter.ai/settings/keys) with credit. The full run at 128 px costs about
-$5 and takes about 75 minutes.
+$6.40 and takes about 75 minutes.
 
 ```sh
 cp .env.example .env              # then add your OpenRouter key to .env
@@ -135,8 +157,9 @@ uv run python -m waldobench extract path/to/the-downloaded-archive.tar.gz
 uv run python -m waldobench prepare --tile 128
 
 # 3. Run the models. These calls cost money.
-uv run python -m waldobench run-tiles      # the eight one-request-per-tile models, about $4.95
-uv run python -m waldobench run-jev        # Jev 1.14, about $0.27
+uv run python -m waldobench run-tiles                     # every model, 1 request per tile, about $5.80
+uv run python -m waldobench run-jev --concurrency 1       # Jev 1.14, Choice, about $0.27
+uv run python -m waldobench run-batched --concurrency 1   # Jev 1.14, yes/no batched, about $0.34
 
 # If a tile run stops (out of credit, provider errors), finish it. Finished searches are never asked again.
 uv run python -m waldobench resume --output runs/tiles-128 --redo-failed
@@ -148,12 +171,11 @@ python3 -m http.server 8000 -d site    # then open http://localhost:8000
 ```
 
 `results/waldo-bench-v1/runs.json` lists the runs behind the published results. For your own runs,
-copy it to `my-runs.json`, change the paths to your run folders, and remove `timing_from` and any tile
-sizes you did not run. The tile-size chart also needs runs at 192 px and 384 px, for example
+copy it to `my-runs.json`, change the paths to your run folders, and remove any tile sizes you did not run. The tile-size chart also needs runs at 192 px and 384 px, for example
 `prepare --tile 192`, then `run-tiles --tiles data/tiles-192/manifest.json --output runs/tiles-192`.
 
-The published runs were made with an earlier version of this code, with the same tiles, prompts and
-settings. The run folders are not in this repository, because they contain the illustrations.
+The published runs were made on 18 October 2026 with this code. The run folders are not in this
+repository, because they contain the illustrations.
 
 Add `--limit-pages 2` to a run step for a cheap test on two scenes.
 
@@ -174,10 +196,11 @@ the IVSN scenes. A fresh clone does not have them, so the page shows a "data mis
 | `waldobench/dataset.py` | Unpacks IVSN, hides printed text, cuts scenes into tiles |
 | `waldobench/search_tiles.py` | One yes/no question per tile; run, resume, and score |
 | `waldobench/search_jev.py` | Jev 1.14: one Choice question per scene |
+| `waldobench/search_batched.py` | One request per scene with a yes/no question per tile (Jev 1.14) |
 | `waldobench/openrouter.py` | Requests, retries, spending caps, answer checks |
 | `waldobench/results.py` | Leaderboard, likely ranges, head-to-head, verdict |
 | `waldobench/site.py` | Exports data and pictures for the results page |
-| `waldobench/models.py` | The nine models and their providers |
+| `waldobench/models.py` | The models and their providers |
 | `waldobench/common.py` | Small shared helpers: hashing, JSON files, images, overlap |
 | `site/` | The results page and the "You vs. the models" game |
 | `results/waldo-bench-v1/` | The published results and the runs behind them |

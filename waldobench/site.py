@@ -11,16 +11,16 @@ site/assets holds the illustrations and is git-ignored: do not publish it.
 import json
 import shutil
 from collections import defaultdict
-from datetime import datetime
 from pathlib import Path
 
 from PIL import Image
 
-from . import search_jev, search_tiles
+from . import search_batched, search_jev, search_tiles
 from .common import ROOT, read_jsonl, sha, write_json
-from .models import MODELS
+from .results import success_times
+from .models import MODELS, base_model, display
 
-DECOY_MIN_MODELS = 3  # a "decoy" is a wrong spot at least this many models chose
+DECOY_MIN_MODELS = 3  # a "decoy" is a wrong spot at least this many different models chose (Jev's three rows count once)
 ATTRIBUTION = {
     "paper": "Mengmi Zhang, Jiashi Feng, Keng Teck Ma, Joo Hwee Lim, Qi Zhao and Gabriel Kreiman, “Finding any Waldo "
              "with zero-shot invariant and efficient visual search,” Nature Communications 9, 3730 (2018)",
@@ -63,31 +63,17 @@ def save_crop(scene, box, size, out):
 
 
 def answer_times(run: Path, alias: str):
-    """When each tile's answer came back, in seconds after its search started (for the race replay).
-
-    Uses the last attempt per tile, so searches that were redone are timed from their final run."""
-    last = {}
-    for call in read_jsonl(run / "calls.jsonl"):
-        if call.get("kind") == "search" and call["model_alias"] == alias and call["repeat"] == 0:
-            key = call["case_id"]
-            if key not in last or call["started_at"] > last[key]["started_at"]:
-                last[key] = call
-    by_page = defaultdict(list)
-    for call in last.values():
-        by_page[call["page"]].append(call)
-    times = {}
-    for calls in by_page.values():
-        start = min(datetime.fromisoformat(c["started_at"]) for c in calls)
-        for c in calls:
-            times[c["case_id"]] = (datetime.fromisoformat(c["started_at"]) - start).total_seconds() + c["latency_s"]
-    return times
+    """When each tile's answer arrives, in seconds after its search started, counting only successful requests
+    (results.success_times), for the race replay."""
+    return {case: s for (model, case, repeat), s in success_times(run, "parallel")[1].items() if model == alias and repeat == 0}
 
 
 def model_picks(entry, cases_by_page):
     """Each scene's chosen tile, found flag, confidence and time for one headline entry; plus its per-tile answers."""
     run = ROOT / entry["run"]
+    source = entry.get("run_model", entry["model"])  # the model's name inside the run folder
     picks, heat = {}, {}
-    if entry["method"] == "one-call":
+    if entry["method"] in ("one-call", "zoom"):
         timing = ROOT / entry["timing_run"]
         timed = {(r["page"], r["repeat"]): r["wall_s"] for r in read_jsonl(timing / "searches.jsonl")}
         box_s = defaultdict(float)  # older runs also asked an unscored Box question; leave its time out
@@ -99,20 +85,30 @@ def model_picks(entry, cases_by_page):
                 chosen = row.get("chosen_tile", row.get("level1_tile"))  # runs before the cleanup said "level1"
                 picks[row["page"]] = {"tile": chosen, "found": bool(row["found"]), "complete": chosen is not None,
                                       "seconds": timed[row["page"], 0] - box_s[row["page"], 0],
-                                      "confidence": row.get("chosen_probability", row.get("level1_probability"))}
-        for call in read_jsonl(run / "calls.jsonl"):
+                                      # A Choice gives a share of one vote over all tiles, not a probability: shown as "–".
+                                      "confidence": None}
+        for row in read_jsonl(run / "searches.jsonl"):  # zoom: its vote among the small tiles inside the chosen large one
+            if row["repeat"] == 0 and row.get("probabilities"):
+                heat.update(row["probabilities"])
+        for call in read_jsonl(run / "calls.jsonl") if entry["method"] == "one-call" else []:
             if call["step"].startswith("choice") and call["repeat"] == 0 and isinstance(call["response"], dict):
                 probabilities = call["response"]["answers"]["tile"].get("probabilities") or {}
                 for i, case in enumerate(cases_by_page[call["page"]], 1):
                     heat[case["id"]] = probabilities.get(f"tile_{i}")
     else:
-        for row in json.loads((run / "summary.json").read_text())["page_results"]:
-            if row["model"] == entry["model"] and row["repeat"] == 0:
+        rows = read_jsonl(run / "searches.jsonl") if entry["method"] == "batched" else json.loads((run / "summary.json").read_text())["page_results"]
+        for row in rows:
+            if row["model"] == source and row["repeat"] == 0:
                 picks[row["page"]] = {"tile": row["winner"], "found": bool(row["top1_hit"]), "complete": bool(row["complete"]),
                                       "seconds": row["wall_s"], "confidence": row["top_probability"]}
         for row in read_jsonl(run / "predictions.jsonl"):
-            if row["model"] == entry["model"] and row["kind"] == "search" and row["repeat"] == 0:
+            if row["model"] == source and row["kind"] == "search" and row["repeat"] == 0:
                 heat[row["case_id"]] = row["answer"]
+    # Time when the model works: successful requests only (results.success_times).
+    timed = success_times(ROOT / entry.get("timing_run", entry["run"]), entry["method"])[0]
+    for page, pick in picks.items():
+        if pick["complete"] and (source, page, 0) in timed:
+            pick["seconds"] = timed[source, page, 0]
     return picks, heat
 
 
@@ -132,7 +128,7 @@ def build(runs_file: Path, results_dir: Path, site: Path) -> dict:
     for folder in ("assets/scenes", "assets/thumbs", "assets/tiles", "assets/crops", "data"):
         (site / folder).mkdir(parents=True, exist_ok=True)
     answers = {e["model"]: model_picks(e, cases_by_page) for e in headline}
-    arrivals = {e["model"]: answer_times(ROOT / e["run"], e["model"]) for e in headline if e["method"] == "parallel"}
+    arrivals = {e["model"]: answer_times(ROOT / e["run"], e.get("run_model", e["model"])) for e in headline if e["method"] == "parallel"}
 
     scenes, heat_out, used_tiles = [], {}, set()
     for number, page in enumerate(sorted(manifest["pages"], key=lambda p: scene_order(p["id"])), 1):
@@ -162,7 +158,7 @@ def build(runs_file: Path, results_dir: Path, site: Path) -> dict:
                                 # Seconds after the search started that each tile's answer arrived. Jev answers all tiles in one request.
                                 "times": {a: [round(arrivals[a][c["id"]], 2) if a in arrivals else round(picks[a]["seconds"], 2) for c in cases] for a in order}}
         scenes.append({"id": page["id"], "number": number, "image": f"assets/scenes/{page['id']}.jpg", "thumb": f"assets/thumbs/{page['id']}.jpg",
-                       "width": page["size"][0], "height": page["size"][1], "truth": truth,
+                       "width": page["size"][0], "height": page["size"][1], "truth": truth, "masked": bool(page.get("mask_applied")),
                        "waldoCrop": f"assets/crops/waldo-{page['id']}.jpg", "picks": picks, "foundBy": sum(p["found"] for p in picks.values())})
         scene.close()
     for case_id in used_tiles:
@@ -175,7 +171,7 @@ def build(runs_file: Path, results_dir: Path, site: Path) -> dict:
         wrong = [{"model": a, "box": p["box"]} for a, p in s["picks"].items() if p["box"] and p["complete"] and not p["found"]]
         for group in clusters(wrong, size):
             fooled = sorted({p["model"] for p in group}, key=order.index)
-            if len(fooled) < DECOY_MIN_MODELS:
+            if len({base_model(a) for a in fooled}) < DECOY_MIN_MODELS:
                 continue
             boxes = [p["box"] for p in group]
             core = [max(b[0] for b in boxes), max(b[1] for b in boxes), min(b[2] for b in boxes), min(b[3] for b in boxes)]
@@ -184,7 +180,7 @@ def build(runs_file: Path, results_dir: Path, site: Path) -> dict:
             with Image.open(site / s["image"]) as opened:
                 picture = opened.convert("RGB")
             region = crop_box(picture, core, 128)
-            key = f"decoy-{s['id']}-{region[0]}-{region[1]}"  # named by position so captions in copy.json stay attached
+            key = f"decoy-{s['id']}-{region[0]}-{region[1]}"  # named by position so names in copy.json stay attached
             save_crop(picture, core, 128, site / f"assets/crops/{key}.jpg")
             decoys.append({"id": key, "scene": s["id"], "number": s["number"], "models": fooled, "fooled": len(fooled),
                            "box": region, "crop": f"assets/crops/{key}.jpg", "foundBy": [a for a, p in s["picks"].items() if p["found"]]})
@@ -195,12 +191,12 @@ def build(runs_file: Path, results_dir: Path, site: Path) -> dict:
         alias = entry["model"]
         models.append({**{k: entry[k] for k in ("model", "model_id", "method", "found", "searches", "found_rate", "found_ci95",
                                                  "p50_search_s", "usd_per_scene", "rank")},
-                       "name": MODELS[alias]["name"], "short": MODELS[alias]["short"], "maker": MODELS[alias]["maker"],
-                       "provider": MODELS[alias]["provider"], "unfinished": entry["searches"] - entry["complete_searches"],
+                       "name": display(alias)["name"], "short": display(alias)["short"], "maker": display(alias)["maker"],
+                       "base": base_model(alias), "baseName": MODELS[base_model(alias)]["name"],
+                       "provider": display(alias)["provider"], "unfinished": entry["searches"] - entry["complete_searches"],
                        "missesPass1": [s["id"] for s in scenes if not s["picks"][alias]["found"]], "beatenBy": entry["beaten_by"]})
     bench = {
         "dataset": {"name": "IVSN Waldo quadrants (Zhang et al. 2018)", "pictures": len(scenes),
-                    "sceneGroups": len({p["scene_group"] for p in manifest["pages"]}),
                     "tiles": sum(len(v) for v in cases_by_page.values()), "tilePx": size,
                     "tilesPerPicture": [min(len(v) for v in cases_by_page.values()), max(len(v) for v in cases_by_page.values())],
                     "stridePx": manifest["preprocessing"]["stride"], "sentPx": manifest["preprocessing"]["sent_size"]},
@@ -210,7 +206,8 @@ def build(runs_file: Path, results_dir: Path, site: Path) -> dict:
                   for e in results["all_entries"]],
         "paired": results["head_to_head"],
         "prompts": {"noul": search_tiles.INSTRUCTIONS, "criteria": search_tiles.CRITERIA,
-                    "choiceLead": search_jev.CHOICE_LEAD, "choiceDetail": search_jev.DETAIL},
+                    "choiceLead": search_jev.CHOICE_LEAD, "choiceDetail": search_jev.DETAIL,
+                    "batchedLead": search_batched.LEAD, "batchedQuestion": search_batched.QUESTION},
         "scenes": scenes, "decoys": decoys, "attribution": ATTRIBUTION,
     }
     write_json(site / "data/bench.json", bench)

@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Play · Waldo Bench</title>
-<meta name="description" content="Find Waldo in ten Where&rsquo;s Waldo pictures, one click each, then compare with nine image-input decision models on the same pictures.">
+<meta name="description" content="Find Waldo in ten Where&rsquo;s Waldo pictures, one guess each, then compare with eleven image-input decision models on the same pictures.">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="play.css">
 </head>
 <body>
 <div class="stripe-band"></div>
-<header class="top"><div class="wrap"><a class="brand" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="hat-clip"><path d="M4 18C4 10 8 6.5 12 6.5S20 10 20 18Z"/></clipPath></defs><g clip-path="url(#hat-clip)"><rect width="24" height="24" fill="#fff"/><rect y="7.5" width="24" height="3" fill="#d8262c"/><rect y="13.5" width="24" height="3" fill="#d8262c"/></g><path d="M4 18C4 10 8 6.5 12 6.5S20 10 20 18Z" fill="none" stroke="#111" stroke-width="1.4"/><rect x="2.5" y="17.5" width="19" height="3.5" rx="1.2" fill="#d8262c" stroke="#111" stroke-width="1.4"/><circle cx="12" cy="5" r="2.4" fill="#d8262c" stroke="#111" stroke-width="1.4"/></svg>Waldo Bench</a><nav class="nav" aria-label="Sections"><a href="index.html#leaderboard">Leaderboard</a><a href="index.html#zoom">Charts</a><a href="index.html#fooled">Fooled</a><a href="index.html#scenes">Scenes</a><a href="play.html" aria-current="page">Play</a><a href="index.html#method">Methodology</a></nav><span class="spacer"></span><span class="meta">Last updated Oct 17, 2026</span></div></header>
+<header class="top"><div class="wrap"><a class="brand" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="hat-clip"><path d="M4 18C4 10 8 6.5 12 6.5S20 10 20 18Z"/></clipPath></defs><g clip-path="url(#hat-clip)"><rect width="24" height="24" fill="#fff"/><rect y="7.5" width="24" height="3" fill="#d8262c"/><rect y="13.5" width="24" height="3" fill="#d8262c"/></g><path d="M4 18C4 10 8 6.5 12 6.5S20 10 20 18Z" fill="none" stroke="#111" stroke-width="1.4"/><rect x="2.5" y="17.5" width="19" height="3.5" rx="1.2" fill="#d8262c" stroke="#111" stroke-width="1.4"/><circle cx="12" cy="5" r="2.4" fill="#d8262c" stroke="#111" stroke-width="1.4"/></svg>Waldo Bench</a><nav class="nav" aria-label="Sections"><a href="index.html#leaderboard">Leaderboard</a><a href="index.html#zoom">Charts</a><a href="index.html#fooled">Fooled</a><a href="index.html#scenes">Scenes</a><a href="play.html" aria-current="page">Play</a><a href="index.html#method">Methodology</a></nav><span class="spacer"></span><span class="meta">Last updated Oct 18, 2026</span></div></header>
 
 <main class="wrap play" id="main">
   <p class="sr-only" id="live" role="status" aria-live="polite" aria-atomic="true"></p>
@@ -18,10 +18,10 @@
   <!-- 1. Start -->
   <div class="screen" id="start">
     <div class="kicker"><span class="tick"></span>The human division</div>
-    <h1 class="play-h1">You vs. nine models.</h1>
+    <h1 class="play-h1">You vs. eleven models.</h1>
     <div class="start-grid">
       <div class="start-main">
-        <p class="lede">Ten pictures, one click each, and the clock runs while you look. Zoom in, find Waldo and click him once: that click is your final answer for the picture. At the end you can compare yourself with every model&rsquo;s real answers on the same ten pictures.</p>
+        <p class="lede">Find Waldo in 10 scenes. You get 1 guess per scene. The clock runs while you look.</p>
 
         <div class="field">
           <span class="field-label" id="mode-label">Mode</span>
@@ -34,38 +34,46 @@
 
         <div class="actions">
           <button type="button" class="btn" id="start-btn" disabled>Loading&hellip;</button>
-          <span class="note">or press <kbd>Enter</kbd></span>
+          <span class="note kbd-only">or press <kbd>Enter</kbd></span>
         </div>
 
-        <p class="rule"><span class="rule-label">Rule</span><span>Same rule as the models: a 128-pixel square centred on your click has to touch Waldo.</span></p>
+        <p class="rule"><span class="rule-label">Rule</span><span>Same as the models: the square must touch Waldo.</span></p>
         <p class="note best" id="best" hidden></p>
         <p class="note load-error" id="load-error" role="alert" hidden></p>
       </div>
       <figure class="ref">
         <img src="assets/reference.jpg" width="372" height="384" alt="Waldo: round glasses, brown hair, red-and-white bobble hat and a red-and-white striped shirt.">
-        <figcaption>Who you&rsquo;re looking for <span>The same reference picture every model was given.</span></figcaption>
+        <figcaption>Waldo <span>The models got this picture too.</span></figcaption>
       </figure>
     </div>
-    <p class="note keys">Keys: <kbd>Enter</kbd> start. In a picture: <kbd>+</kbd> <kbd>&minus;</kbd> zoom, <kbd>0</kbd> whole picture, arrow keys pan, <kbd>G</kbd> give up, <kbd>Enter</kbd> answers at the crosshair when the picture has keyboard focus. After an answer: <kbd>Enter</kbd> or <kbd>Space</kbd> next, <kbd>W</kbd> zoom to Waldo.</p>
+    <p class="note keys kbd-only">Keys: <kbd>Enter</kbd> start. In a picture: <kbd>+</kbd> <kbd>&minus;</kbd> zoom, <kbd>0</kbd> whole picture, arrow keys move the square, <kbd>Enter</kbd> answers, <kbd>G</kbd> give up. After an answer: <kbd>Enter</kbd> or <kbd>Space</kbd> next, <kbd>W</kbd> show Waldo.</p>
   </div>
 
   <!-- 2 and 3. Round and reveal -->
   <div class="screen" id="round" hidden>
     <h2 class="sr-only" id="round-title">Picture 1 of 10</h2>
+    <!-- 1 row on wide screens, 2 rows on phones (status, then buttons). Zoom stays at the right end.
+         Give up sits left; Next appears where the round had empty bar or the (still off) Lock in, so a double click can't skip a picture. -->
     <div class="round-bar" id="round-bar">
-      <div class="prog"><span class="num" id="prog-text">1 / 10</span><span class="pips" id="pips" aria-hidden="true"></span></div>
-      <div class="timer num" id="timer" aria-hidden="true"><span id="timer-val">0.0</span>&nbsp;s<span class="cap"> / 90</span></div>
-      <p class="verdict" id="verdict" hidden></p>
-      <span class="spacer"></span>
-      <div class="zoom" role="group" aria-label="Zoom">
-        <button type="button" id="zoom-out" aria-label="Zoom out" title="Zoom out (&minus;)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9"/></svg></button>
-        <span class="zl num" id="zoom-level" aria-hidden="true">1.0&times;</span>
-        <button type="button" id="zoom-in" aria-label="Zoom in" title="Zoom in (+)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9"/></svg></button>
-        <button type="button" class="fit" id="zoom-fit" title="Whole picture (0)">Fit</button>
+      <div class="bar-row r1">
+        <img class="ref-thumb" id="ref-thumb" src="assets/reference.jpg" width="372" height="384" alt="Waldo">
+        <div class="prog"><span class="num" id="prog-text">1 / 10</span><span class="pips" id="pips" aria-hidden="true"></span></div>
+        <div class="timer num" id="timer" aria-hidden="true"><span id="timer-val">0.0</span><span class="cap" id="timer-cap"> / 90 s</span><span class="tbar"><i id="tbar"></i></span></div>
+        <p class="verdict" id="verdict" hidden></p>
       </div>
-      <button type="button" class="btn ghost sm" id="give-up" title="Give up (G)">Give up</button>
-      <button type="button" class="btn ghost sm" id="to-waldo" title="Zoom to Waldo (W)" style="gap:0" hidden><span class="hide-xs">Zoom to&nbsp;</span>Waldo</button>
-      <button type="button" class="btn sm" id="next" hidden>Next picture</button>
+      <div class="bar-row r2">
+        <button type="button" class="btn ghost sm" id="give-up" title="Give up (G)">Give up</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost sm" id="to-waldo" title="Show Waldo (W)" hidden>Show Waldo</button>
+        <button type="button" class="btn sm lock" id="lock-in" disabled>Lock in</button>
+        <button type="button" class="btn sm" id="next" hidden>Next picture</button>
+        <div class="zoom" role="group" aria-label="Zoom">
+          <button type="button" id="zoom-out" aria-label="Zoom out" title="Zoom out (&minus;)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9"/></svg></button>
+          <span class="zl num" id="zoom-level" aria-hidden="true">1.0&times;</span>
+          <button type="button" id="zoom-in" aria-label="Zoom in" title="Zoom in (+)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9"/></svg></button>
+          <button type="button" class="fit" id="zoom-fit" title="Whole picture (0)">Fit</button>
+        </div>
+      </div>
     </div>
 
     <div class="pstage" id="stage" tabindex="0" role="application" aria-roledescription="zoomable picture" aria-label="Scene picture" aria-describedby="keys-round">
@@ -75,7 +83,7 @@
       <div class="stage-msg" id="stage-msg">Loading picture&hellip;</div>
     </div>
 
-    <p class="note keys" id="keys-round">Scroll or pinch to zoom, drag to pan, click Waldo once. Keys: <kbd>+</kbd> <kbd>&minus;</kbd> zoom, <kbd>0</kbd> whole picture, arrow keys pan, <kbd>Enter</kbd> answers at the crosshair when the picture has keyboard focus, <kbd>G</kbd> give up.</p>
+    <p class="note keys" id="keys-round"><span class="click-only">Scroll to zoom, drag to pan, click Waldo.</span><span class="tap-only">Pinch to zoom, drag to pan. Tap to place the square, tap it again to answer.</span><span class="kbd-only"> Keys: <kbd>+</kbd> <kbd>&minus;</kbd> zoom, <kbd>0</kbd> whole picture, arrow keys move the square, <kbd>Enter</kbd> answers, <kbd>G</kbd> give up.</span></p>
 
     <div class="details" id="details" hidden>
       <figure class="crop">
@@ -83,16 +91,16 @@
         <figcaption>Waldo, up close</figcaption>
       </figure>
       <div class="details-main">
-        <p class="mline" id="models-line">Found by 0 of 10 models</p>
+        <p class="mline" id="models-line">Found by 0 of 13</p>
         <div class="tags" id="model-tags"></div>
-        <p class="note" id="unfinished-note" hidden>* Unfinished search: not every tile request came back, and an unfinished search scores as a miss.</p>
+        <p class="note" id="unfinished-note" hidden>* Unfinished search: counts as a miss.</p>
         <div class="mark-key note">
-          <span><i class="sw sw-waldo"></i>Labeled Waldo</span>
-          <span><i class="sw sw-you"></i>Your 128&nbsp;px square</span>
-          <span><i class="sw sw-model"></i>Tile each model chose</span>
+          <span><i class="sw sw-waldo"></i>Waldo</span>
+          <span><i class="sw sw-you"></i>Your square</span>
+          <span><i class="sw sw-model"></i>Model picks</span>
         </div>
         <p class="note" id="scene-id"></p>
-        <p class="note">Keys: <kbd>Enter</kbd> or <kbd>Space</kbd> next, <kbd>W</kbd> zoom to Waldo, <kbd>0</kbd> whole picture.</p>
+        <p class="note kbd-only">Keys: <kbd>Enter</kbd> or <kbd>Space</kbd> next, <kbd>W</kbd> show Waldo, <kbd>0</kbd> whole picture.</p>
       </div>
     </div>
   </div>

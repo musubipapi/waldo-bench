@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-16",
+  "date": "2026-10-18",
   "headline_tile_px": 128,
   "tiles": {
     "384": "data/tiles-384/manifest.json",
@@ -7,16 +7,50 @@
     "128": "data/tiles-128/manifest.json"
   },
   "runs": [
-    {"path": "runs/ivsn-reference-v1", "tile_px": 384, "method": "parallel"},
-    {"path": "runs/ivsn-reference-t192-v1", "tile_px": 192, "method": "parallel"},
-    {"path": "runs/ivsn-reference-t192-new-models-v1", "tile_px": 192, "method": "parallel"},
-    {"path": "runs/ivsn-jev-flat192-v1", "tile_px": 192, "method": "one-call"},
-    {"path": "runs/ivsn-reference-t128-v1", "tile_px": 128, "method": "parallel"},
-    {"path": "runs/ivsn-jev-flat128-v2", "tile_px": 128, "method": "one-call", "timing_from": "runs/ivsn-jev-flat128-v1"}
+    {
+      "path": "runs/v2-tiles-384",
+      "tile_px": 384,
+      "method": "parallel",
+      "as": {
+        "jev": "jev-tiles"
+      }
+    },
+    {
+      "path": "runs/v2-tiles-192",
+      "tile_px": 192,
+      "method": "parallel",
+      "as": {
+        "jev": "jev-tiles"
+      }
+    },
+    {
+      "path": "runs/v2-tiles-128",
+      "tile_px": 128,
+      "method": "parallel",
+      "as": {
+        "jev": "jev-tiles"
+      }
+    },
+    {
+      "path": "runs/v2c-jev-choice-128",
+      "tile_px": 128,
+      "method": "one-call"
+    },
+    {
+      "path": "runs/v2c-jev-batched-128",
+      "tile_px": 128,
+      "method": "batched",
+      "as": {
+        "jev": "jev-batched"
+      }
+    }
   ],
   "notes": [
-    "Every model is scored on one pass.",
-    "Jev 1.14's answers and cost come from a pass run at 23:49 EDT on 2026-10-16, when TypeSafe answered about 1.2 s slower; its typical search time comes from its earlier pass at 14:13 EDT, close to the other models' 15:17 EDT run (timing_from).",
-    "Searches that hit a provider error were run again in full until they finished (resume --redo-failed). On 2026-10-17, 14 searches slower than 3x their model's median time (provider stalls) were also run again in full (resume --redo-slow 3); none changed found or missed."
+    "Every run is fresh, made on 2026-10-18 with the same tiles, prompts and settings, one pass per model. Earlier runs (2026-10-16 and the morning of 2026-10-18) are kept on disk but no longer used.",
+    "One request per tile: all 11 models in one run per tile size, one search at a time in a shuffled order, 16 tile requests in flight. Whole-scene methods (Jev 1.14 Choice and batched): one scene at a time, the same condition. Earlier whole-scene runs with several scenes in flight (runs/v2-*, v2b-*) are kept on disk but not used: the scenes slowed each other down (Jev: about 3.2 s instead of 1.5 s).",
+    "Time counts only successful requests (results.success_times): speed when the model works, not how reliable its provider is. Perplexity (Decider Flash V1.2) and Cloudflare (Clef, Clef Flash) rejected some requests with HTTP 429.",
+    "Searches that hit a provider error were run again in full (resume --redo-failed), as were searches slower than 3x their model's median time (resume --redo-slow 3: 3 at 128 px, 8 at 192 px, 16 at 384 px; none changed found or missed). At 128 px, 37 searches were first stopped by the 150,000-request safety cap and then finished in full.",
+    "Decider V1.1 27B was retired on OpenRouter by 2026-10-18 and is not included. Mercury Decide, left out on 2026-10-16 because the provider rate-limited every request, now works and is included.",
+    "Decider Flash V1.2 can also take a whole scene in one request, but Perplexity rate-limited those requests heavily (15 of 66 scenes failed at first, even one at a time), so the owner judged that test unfair and it is not shown (run kept at runs/v2c-flash-batched-128)."
   ]
 }

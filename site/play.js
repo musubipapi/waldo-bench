@@ -5,10 +5,12 @@
 
   var CFG = {
     pictures: 10,       // pictures per game
-    hardMaxFound: 5,    // Hard: scenes found by at most this many models
     capSeconds: 90,     // per-picture clock cap, then it is a miss
     square: 128,        // answer square, scene pixels (same as a model tile)
     clickSlop: 6,       // pointer travel (px) below which down/up counts as a click
+    guardMs: 500,       // after a picture or a result appears, ignore answer, give up and next this long (double clicks)
+    doubleTapMs: 300,   // 2 taps this close in time zoom in instead of answering
+    tapZoom: 2,
     maxScale: 6,        // screen px per scene px at full zoom
     zoomStep: 1.5,
     panStep: 90,
@@ -25,10 +27,10 @@
     start: $('start'), round: $('round'), summary: $('summary'),
     modeSeg: $('mode-seg'), countNormal: $('count-normal'), countHard: $('count-hard'), modeDesc: $('mode-desc'),
     startBtn: $('start-btn'), best: $('best'), loadError: $('load-error'),
-    roundTitle: $('round-title'), roundBar: $('round-bar'), progText: $('prog-text'), pips: $('pips'),
-    timer: $('timer'), timerVal: $('timer-val'), verdict: $('verdict'),
+    roundTitle: $('round-title'), roundBar: $('round-bar'), refThumb: $('ref-thumb'), progText: $('prog-text'), pips: $('pips'),
+    timer: $('timer'), timerVal: $('timer-val'), timerCap: $('timer-cap'), tbar: $('tbar'), verdict: $('verdict'),
     zoomOut: $('zoom-out'), zoomIn: $('zoom-in'), zoomFit: $('zoom-fit'), zoomLevel: $('zoom-level'),
-    giveUp: $('give-up'), toWaldo: $('to-waldo'), next: $('next'),
+    giveUp: $('give-up'), toWaldo: $('to-waldo'), lockIn: $('lock-in'), next: $('next'),
     stage: $('stage'), marks: $('marks'), labels: $('labels'), stageMsg: $('stage-msg'),
     keysRound: $('keys-round'), details: $('details'), cropImg: $('crop-img'), modelsLine: $('models-line'),
     modelTags: $('model-tags'), unfinishedNote: $('unfinished-note'), sceneId: $('scene-id'),
@@ -52,20 +54,31 @@
     token: 0,
     t0: 0,
     tick: 0,
+    pausedAt: 0,         // clock stopped while the tab is hidden
+    readyAt: 0,          // when the picture appeared
+    revealAt: 0,         // when the result appeared
     view: { s: 1, tx: 0, ty: 0 },
     fit: 1,
     stageW: 0,
     stageH: 0,
     anim: 0,
     animTo: null,
-    overlay: null
+    overlay: null,
+    aim: null,           // the answer square's centre, scene px
+    aimBy: '',           // mouse (follows the cursor) | touch (placed by a tap) | key (moved with arrow keys)
+    aimEls: null,
+    mouse: null,         // last mouse position over the picture, client px
+    lastTap: null,
+    tapTimer: 0,
+    keyNav: false        // last input was Tab: focusing the picture counts as keyboard use
   };
 
   /* ---------- small helpers ---------- */
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function isNum(v) { return typeof v === 'number' && isFinite(v); }
-  function fmtS(v) { return isNum(v) ? v.toFixed(1) : '—'; }
+  function fmtS(v) { return isNum(v) ? v.toFixed(1) : '–'; }
+  function sceneName(sc) { return 'Scene ' + (isNum(sc.number) ? sc.number : sc.id); }
   function median(list) {
     var a = list.filter(isNum).sort(function (x, y) { return x - y; });
     if (!a.length) return null;
@@ -115,6 +128,12 @@
     return s;
   }
   function clearNode(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function since(t) { return performance.now() - t; }
+  function headerH() { var h = document.querySelector('.top'); return h ? h.offsetHeight : 0; }
+  function jumpTo(y) {
+    // no smooth scrolling here: the picture has to be in place before the clock matters
+    try { window.scrollTo({ top: y, behavior: 'instant' }); } catch (e) { window.scrollTo(0, y); }
+  }
   function announce(text) {
     el.live.textContent = '';
     window.setTimeout(function () { el.live.textContent = text; }, 60);
@@ -136,6 +155,8 @@
     return S.models.filter(function (m) { return pickOf(scene, m).found; }).length;
   }
   function modelCount() { return S.models.length; }
+  // Hard: scenes found by fewer than half the models, so "most models missed" stays true
+  function hardMax() { return Math.ceil(modelCount() / 2) - 1; }
 
   /* ---------- storage (best result per mode) ---------- */
 
@@ -202,22 +223,18 @@
       b.setAttribute('aria-pressed', b.getAttribute('data-mode') === mode ? 'true' : 'false');
     });
     if (!S.data) return;
-    var M = modelCount();
     var pool = poolFor(mode);
     var n = Math.min(CFG.pictures, pool.length);
     if (mode === 'hard') {
-      el.modeDesc.textContent = n < CFG.pictures
-        ? 'All ' + pool.length + ' scenes that ' + CFG.hardMaxFound + ' or fewer of the ' + M + ' models found, in random order.'
-        : n + ' random scenes from the ' + pool.length + ' that ' + CFG.hardMaxFound + ' or fewer of the ' + M + ' models found.';
+      el.modeDesc.textContent = n + ' random scenes that ' + hardMax() + ' or fewer models found.';
     } else {
-      el.modeDesc.textContent = n + ' random scenes from all ' + pool.length + '.';
+      el.modeDesc.textContent = n + ' random scenes.';
     }
   }
 
   function initStart() {
-    var M = modelCount();
     el.countNormal.textContent = '· ' + S.scenes.length + ' scenes';
-    el.countHard.textContent = '· ' + S.hardPool.length + ' found by ≤ ' + CFG.hardMaxFound + ' of ' + M;
+    el.countHard.textContent = '· ' + S.hardPool.length + ' scenes most models missed';
     var hardBtn = el.modeSeg.querySelector('[data-mode="hard"]');
     if (!S.hardPool.length) hardBtn.disabled = true;
     var wanted = (location.hash || '').replace('#', '').toLowerCase();
@@ -246,13 +263,21 @@
     S.game = { mode: S.mode, scenes: chosen, idx: 0, results: [] };
     showScreen('round');
     buildPips();
-    window.scrollTo(0, 0);
     startRound();
     focusStage();
   }
 
   function focusStage() {
+    S.keyNav = false;   // a focus we move ourselves is not the player choosing the picture
     try { el.stage.focus({ preventScroll: true }); } catch (e) { el.stage.focus(); }
+  }
+
+  // Show the bar and the whole picture; on short windows (landscape phones) the bar tucks under the sticky header.
+  function placeRound() {
+    var y0 = window.pageYOffset || 0;
+    var barTop = el.roundBar.getBoundingClientRect().top + y0 - headerH();
+    var need = el.stage.getBoundingClientRect().bottom + y0 - window.innerHeight + 4;
+    jumpTo(clamp(need, 0, Math.max(0, barTop)));
   }
 
   function buildPips() {
@@ -279,16 +304,28 @@
     stopTimer();
     stopAnim();
     clearOverlay();
+    window.clearTimeout(S.tapTimer);
+    S.tapTimer = 0;
+    S.lastTap = null;
+    S.aim = null;
+    S.aimBy = '';
+    makeAim();
 
     el.progText.textContent = (g.idx + 1) + ' / ' + n;
     el.roundTitle.textContent = 'Picture ' + (g.idx + 1) + ' of ' + n;
     el.timerVal.textContent = '0.0';
+    el.timerCap.textContent = ' / ' + CFG.capSeconds + ' s';
+    el.tbar.style.transform = '';
     el.timer.classList.remove('late');
     el.timer.hidden = false;
+    el.refThumb.hidden = false;
     el.verdict.hidden = true;
     el.giveUp.hidden = false;
+    el.lockIn.hidden = false;
     el.toWaldo.hidden = true;
     el.next.hidden = true;
+    el.roundBar.classList.remove('is-reveal');
+    updateLock();
     el.details.hidden = true;
     el.keysRound.hidden = false;
     el.stage.classList.add('round');
@@ -310,6 +347,7 @@
     sizeStage();
     S.view = fitView();
     applyView();
+    placeRound();
 
     var settled = false;
     function ready(ok) {
@@ -322,7 +360,10 @@
         el.stageMsg.textContent = 'This picture did not load. Give up to move on.';
       }
       S.phase = 'round';
+      S.readyAt = performance.now();
       startTimer();
+      if (S.mouse) S.aimBy = 'mouse';   // a mouse resting on the picture gets its square right away
+      drawAim();
       announce('Picture ' + (g.idx + 1) + ' of ' + n + '. The clock is running.');
       preloadNext();
     }
@@ -345,25 +386,47 @@
   function startTimer() {
     stopTimer();
     S.t0 = performance.now();
+    S.pausedAt = 0;
     S.tick = window.setInterval(tickTimer, 100);
     tickTimer();
+    if (document.hidden) pauseClock();   // the picture came in while the tab was in the background
   }
   function stopTimer() {
     if (S.tick) window.clearInterval(S.tick);
     S.tick = 0;
   }
-  function elapsed() { return (performance.now() - S.t0) / 1000; }
+  function elapsed() { return ((S.pausedAt || performance.now()) - S.t0) / 1000; }
   function tickTimer() {
     if (S.phase !== 'round') return;
     var t = elapsed();
     if (t >= CFG.capSeconds) { finish('timeout'); return; }
     el.timerVal.textContent = (Math.floor(t * 10) / 10).toFixed(1);
+    el.tbar.style.transform = 'scaleX(' + (1 - t / CFG.capSeconds).toFixed(4) + ')';
     el.timer.classList.toggle('late', t >= CFG.capSeconds - 10);
   }
+
+  // A hidden tab hides the picture, so the clock stops too.
+  function pauseClock() {
+    if (S.phase !== 'round' || S.pausedAt) return;
+    S.pausedAt = performance.now();
+    stopTimer();
+  }
+  function resumeClock() {
+    if (!S.pausedAt) return;
+    S.t0 += performance.now() - S.pausedAt;
+    S.pausedAt = 0;
+    if (S.phase !== 'round') return;
+    S.tick = window.setInterval(tickTimer, 100);
+    tickTimer();
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) pauseClock(); else resumeClock();
+  });
 
   // how: 'click' | 'giveup' | 'timeout'
   function finish(how, X, Y) {
     if (S.phase !== 'round') return;
+    if (how !== 'timeout' && since(S.readyAt) < CFG.guardMs) return;   // a double click on Next must not answer the new picture
     var sc = S.scene;
     var t = elapsed();
     if (how !== 'timeout' && t >= CFG.capSeconds) how = 'timeout';
@@ -384,12 +447,22 @@
 
   function giveUp() { if (S.phase === 'round') finish('giveup'); }
 
+  // answer at the placed square (a 2nd tap on it, Lock in, or Enter)
+  function lockIn() {
+    if (S.phase === 'round' && S.aim && (S.aimBy === 'touch' || S.aimBy === 'key')) finish('click', S.aim.X, S.aim.Y);
+  }
+  function updateLock() {
+    el.lockIn.disabled = !(S.phase === 'round' && S.aim && S.aimBy === 'touch');
+  }
+
   /* ---------- reveal ---------- */
 
-  function verdictText(res) {
-    if (res.found) return 'Found it in ' + fmtS(res.seconds) + ' s';
-    if (res.how === 'timeout') return 'Time’s up. Waldo was here.';
-    return 'Missed. Waldo was here.';
+  // [short verdict, the rest]; narrower screens show only the short part, so the bar keeps 1 height
+  function verdictParts(res) {
+    if (res.found) return ['Found it in ' + fmtS(res.seconds) + ' s', ''];
+    if (res.how === 'timeout') return ['Time’s up.', ' Waldo was here.'];
+    if (res.how === 'giveup') return ['Gave up.', ' Waldo was here.'];
+    return ['Missed.', ' Waldo was here.'];
   }
 
   function showReveal(res) {
@@ -397,30 +470,51 @@
     var g = S.game;
     var M = modelCount();
     var last = g.idx + 1 >= g.scenes.length;
+    var k = S.models.filter(function (m) { return pickOf(sc, m).found; }).length;
+    S.revealAt = performance.now();
+    window.clearTimeout(S.tapTimer);
+    S.tapTimer = 0;
 
-    // top bar
+    // top bar: verdict, then how many models found this one
+    var vp = verdictParts(res);
+    var kind = res.found ? 'found' : (res.how === 'giveup' ? 'gave' : 'miss');
     clearNode(el.verdict);
-    el.verdict.className = 'verdict ' + (res.found ? 'found' : 'miss');
+    el.verdict.className = 'verdict ' + kind;
     var mark = node('span', 'mark');
     mark.setAttribute('aria-hidden', 'true');
-    mark.appendChild(svgIcon(res.found ? 'M3.5 8.5l3 3 6-7' : 'M4.5 4.5l7 7M11.5 4.5l-7 7'));
+    mark.appendChild(svgIcon(kind === 'found' ? 'M3.5 8.5l3 3 6-7' : kind === 'gave' ? 'M4.5 8h7' : 'M4.5 4.5l7 7M11.5 4.5l-7 7'));
     el.verdict.appendChild(mark);
-    el.verdict.appendChild(node('span', null, verdictText(res)));
+    var vtext = node('span', 'vtext', vp[0]);
+    if (vp[1]) vtext.appendChild(node('span', 'hide-md', vp[1]));
+    el.verdict.appendChild(vtext);
+    var vcount = node('span', 'vcount num', k + ' of ' + M);
+    vcount.appendChild(node('span', 'hide-md', ' models'));
+    vcount.appendChild(document.createTextNode(' found it'));
+    el.verdict.appendChild(vcount);
     el.verdict.hidden = false;
     el.timer.hidden = true;
+    el.refThumb.hidden = true;
     el.giveUp.hidden = true;
+    el.lockIn.hidden = true;
     el.toWaldo.hidden = false;
-    el.next.textContent = last ? 'See results' : 'Next picture';
+    clearNode(el.next);
+    if (last) {
+      el.next.appendChild(node('span', 'hide-xs', 'See results'));
+      el.next.appendChild(node('span', 'xs-only', 'Results'));
+    } else {
+      var lab = node('span', null, 'Next');   // 1 box, so the button's gap doesn't split the words
+      lab.appendChild(node('span', 'hide-xs', ' picture'));
+      el.next.appendChild(lab);
+    }
     el.next.hidden = false;
+    el.roundBar.classList.add('is-reveal');
     updatePips();
 
     // details under the picture
-    var k = 0;
     var anyUnfinished = false;
     clearNode(el.modelTags);
     S.models.forEach(function (m) {
       var p = pickOf(sc, m);
-      if (p.found) k++;
       var unfinished = !p.missing && !p.complete;
       if (unfinished) anyUnfinished = true;
       var tag = node('span', 'tag ' + (p.found ? 'found' : 'miss'));
@@ -433,19 +527,19 @@
         (isNum(p.seconds) ? ', search took ' + fmtS(p.seconds) + ' s' : '');
       el.modelTags.appendChild(tag);
     });
-    var modelsLine = 'Found by ' + k + ' of ' + M + ' models';
+    var modelsLine = 'Found by ' + k + ' of ' + M;
     el.modelsLine.textContent = modelsLine;
     el.unfinishedNote.hidden = !anyUnfinished;
     var cropFig = el.cropImg.parentNode;
     if (sc.waldoCrop) {
       el.cropImg.src = sc.waldoCrop;
-      el.cropImg.alt = 'Close-up of Waldo in scene ' + sc.id;
+      el.cropImg.alt = 'Close-up of Waldo in ' + sceneName(sc).toLowerCase();
       cropFig.hidden = false;
     } else {
       el.cropImg.removeAttribute('src');
       cropFig.hidden = true;
     }
-    el.sceneId.textContent = 'Scene ' + sc.id + ' · ' + sc.width + ' × ' + sc.height + ' px · labeled Waldo ' +
+    el.sceneId.textContent = sceneName(sc) + ' · ' + sc.width + ' × ' + sc.height + ' px · labeled Waldo ' +
       Math.round(sc.truth[2] - sc.truth[0]) + ' × ' + Math.round(sc.truth[3] - sc.truth[1]) + ' px';
     el.keysRound.hidden = true;
     el.details.hidden = false;
@@ -456,18 +550,17 @@
     buildOverlay(res);
     animateTo(revealView(res), 420);
 
-    var vt = verdictText(res);
+    var vt = vp[0] + vp[1];
     announce(vt + (/\.$/.test(vt) ? ' ' : '. ') + modelsLine + '.');
     try { el.next.focus({ preventScroll: true }); } catch (e) { el.next.focus(); }
   }
 
   function nextPicture() {
     if (S.phase !== 'reveal') return;
+    if (since(S.revealAt) < CFG.guardMs) return;   // a double click on the answer must not skip the result
     var g = S.game;
     if (g.idx + 1 < g.scenes.length) {
       g.idx++;
-      var hdr = document.querySelector('.top');
-      if (el.roundBar.getBoundingClientRect().top < (hdr ? hdr.offsetHeight : 0)) window.scrollTo(0, 0);
       startRound();
       focusStage();
     } else {
@@ -481,6 +574,57 @@
     clearNode(el.marks);
     clearNode(el.labels);
     S.overlay = null;
+    S.aimEls = null;
+  }
+
+  /* ---------- the answer square while playing: exactly the region that is scored ---------- */
+
+  function makeAim() {
+    var g = svgNode('g', 'aim');
+    var halo = svgNode('rect', 'm-you-halo');
+    var box = svgNode('rect', 'm-you');
+    var dot = svgNode('circle', 'm-dot');
+    dot.setAttribute('r', '2.5');
+    g.appendChild(halo);
+    g.appendChild(box);
+    g.appendChild(dot);
+    g.style.display = 'none';
+    el.marks.appendChild(g);
+    S.aimEls = { g: g, halo: halo, box: box, dot: dot };
+  }
+
+  function inScene(X, Y) { return X >= 0 && Y >= 0 && X <= S.scene.width && Y <= S.scene.height; }
+
+  // the mouse square follows the cursor through pans and zooms
+  function mouseAim() {
+    var p = stagePoint(S.mouse.x, S.mouse.y);
+    var X = (p.x - S.view.tx) / S.view.s;
+    var Y = (p.y - S.view.ty) / S.view.s;
+    S.aim = inScene(X, Y) ? { X: X, Y: Y } : null;
+  }
+
+  function drawAim() {
+    var n = S.aimEls;
+    if (!n) return;
+    if (S.aimBy === 'mouse' && S.mouse) mouseAim();
+    var a = S.aim;
+    var show = !!a && S.phase === 'round' && !el.stage.classList.contains('dragging');
+    n.g.style.display = show ? '' : 'none';
+    if (!show) return;
+    var v = S.view;
+    var h = CFG.square / 2;
+    var b = [(a.X - h) * v.s + v.tx, (a.Y - h) * v.s + v.ty, (a.X + h) * v.s + v.tx, (a.Y + h) * v.s + v.ty];
+    setRect(n.halo, b);
+    setRect(n.box, b);
+    n.dot.setAttribute('cx', (a.X * v.s + v.tx).toFixed(1));
+    n.dot.setAttribute('cy', (a.Y * v.s + v.ty).toFixed(1));
+  }
+
+  function setAim(X, Y, by) {
+    S.aim = { X: clamp(X, 0, S.scene.width), Y: clamp(Y, 0, S.scene.height) };
+    S.aimBy = by;
+    drawAim();
+    updateLock();
   }
 
   function wrapNames(names, maxChars) {
@@ -504,10 +648,16 @@
     return l;
   }
 
+  // phones (narrow, or a short stage when turned sideways): no name labels on model tiles; the list under the picture names them
+  function namesFit() {
+    return !(window.matchMedia && window.matchMedia('(max-width: 640px)').matches) && S.stageH >= 360;
+  }
+
   function buildOverlay(res) {
     clearOverlay();
     var sc = res.scene;
     var items = [];
+    var named = namesFit();
 
     // model tiles, grouped when several models chose the same tile
     var groups = [];
@@ -545,13 +695,15 @@
     // label order: Waldo, You, then models top to bottom
     var order = [waldo];
     if (you) order.push(you);
-    items.filter(function (it) { return it.kind === 'model'; })
-      .sort(function (a, b) { return a.box[1] - b.box[1] || a.box[0] - b.box[0]; })
-      .forEach(function (it) { order.push(it); });
+    if (named) {
+      items.filter(function (it) { return it.kind === 'model'; })
+        .sort(function (a, b) { return a.box[1] - b.box[1] || a.box[0] - b.box[0]; })
+        .forEach(function (it) { order.push(it); });
+    }
     order.forEach(function (it) { it.label = addLabel(it.text, it.cls); });
     order.forEach(function (it) { it.lw = it.label.offsetWidth; it.lh = it.label.offsetHeight; });
 
-    S.overlay = { items: items, order: order, waldo: waldo };
+    S.overlay = { items: items, order: order, waldo: waldo, res: res, named: named };
     layoutOverlay();
   }
 
@@ -623,11 +775,13 @@
     var natural = w * sc.height / sc.width;
     // room from the stage's top (page coordinates) to the bottom of the window, leaving a peek of what follows
     var top = el.stage.getBoundingClientRect().top + (window.pageYOffset || 0);
-    var avail = window.innerHeight - top - (w < 640 ? 24 : 56);
+    var avail = window.innerHeight - top - 56;
+    // the most a window can show: bar right under the sticky header (landscape phones), see placeRound
+    var room = window.innerHeight - headerH() - el.roundBar.offsetHeight - 8;
     var h;
-    if (w < 640) h = Math.max(natural, Math.min(avail, w));   // phones: a little taller, room to pan when zoomed
-    else h = Math.min(natural, Math.max(avail, 320));         // desktop: full width unless the window is short
-    h = Math.round(h);
+    if (w < 640) h = Math.min(natural, room);                            // phones: the picture's own shape, no empty bands
+    else h = Math.min(natural, Math.max(avail, Math.min(320, room)));    // desktop: full width unless the window is short
+    h = Math.max(120, Math.round(h));
     el.stage.style.height = h + 'px';
     S.stageW = w;
     S.stageH = h;
@@ -662,6 +816,7 @@
     el.zoomOut.setAttribute('aria-disabled', v.s <= S.fit * 1.001 ? 'true' : 'false');
     el.zoomIn.setAttribute('aria-disabled', v.s >= maxScale() * 0.999 ? 'true' : 'false');
     layoutOverlay();
+    drawAim();
   }
 
   function stopAnim() {
@@ -755,18 +910,21 @@
     var cy = (oldH / 2 - v.ty) / v.s;
     var rel = v.s / oldFit;
     sizeStage();
+    // turning a phone can change whether model tiles get their names
+    if (S.overlay && S.overlay.named !== namesFit()) buildOverlay(S.overlay.res);
     if (S.stageW === oldW && S.stageH === oldH) { applyView(); return; }
     stopAnim();
     var s = clampScale(S.fit * rel);
     S.view = clampView({ s: s, tx: S.stageW / 2 - cx * s, ty: S.stageH / 2 - cy * s });
     applyView();
+    if (S.phase === 'round' && el.stage.getBoundingClientRect().bottom > window.innerHeight) placeRound();
   }
 
-  /* ---------- pointer input: drag to pan, pinch to zoom, click to answer ---------- */
+  /* ---------- pointer input: drag to pan, pinch to zoom; mouse: click answers; touch: tap places the square, a tap on it answers ---------- */
 
   var pointers = new Map();
   var gesture = null;     // { type: 'pan', id, x, y } | { type: 'pinch', d0, s0, sx, sy }
-  var clickCand = null;   // { id, x0, y0, view, ok }
+  var clickCand = null;   // { id, type, x0, y0, view, ok, phase, token }
 
   function stagePoint(cx, cy) {
     var r = el.stage.getBoundingClientRect();
@@ -795,13 +953,14 @@
   el.stage.addEventListener('pointerdown', function (e) {
     if (!canView() && S.phase !== 'loading') return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    S.keyNav = false;
     if (e.isPrimary) pointers.clear();
     try { el.stage.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.size === 1) {
       stopAnim();
       clickCand = {
-        id: e.pointerId, x0: e.clientX, y0: e.clientY, ok: S.phase === 'round', token: S.token,
+        id: e.pointerId, type: e.pointerType, x0: e.clientX, y0: e.clientY, ok: true, phase: S.phase, token: S.token,
         view: { s: S.view.s, tx: S.view.tx, ty: S.view.ty }
       };
       gesture = { type: 'pan', id: e.pointerId, x: e.clientX, y: e.clientY };
@@ -812,6 +971,11 @@
   });
 
   el.stage.addEventListener('pointermove', function (e) {
+    // the square follows the mouse; only real moves count (browsers also send one when the page changes under a still mouse)
+    if (e.pointerType === 'mouse' && (!S.mouse || S.mouse.x !== e.clientX || S.mouse.y !== e.clientY)) {
+      S.mouse = { x: e.clientX, y: e.clientY };
+      if (S.phase === 'round') { S.aimBy = 'mouse'; drawAim(); updateLock(); }
+    }
     if (!pointers.has(e.pointerId)) return;
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (!gesture) return;
@@ -819,7 +983,7 @@
       if (clickCand && clickCand.id === e.pointerId &&
           Math.hypot(e.clientX - clickCand.x0, e.clientY - clickCand.y0) >= CFG.clickSlop) {
         clickCand.ok = false;
-        el.stage.classList.add('dragging');
+        el.stage.classList.add('dragging');   // hides the square while panning
       }
       var dx = e.clientX - gesture.x;
       var dy = e.clientY - gesture.y;
@@ -845,11 +1009,8 @@
     var c = clickCand;
     if (c && c.id === e.pointerId) {
       clickCand = null;
-      if (e.type === 'pointerup' && c.ok && c.token === S.token && pointers.size === 0 && S.phase === 'round') {
-        var r = el.stage.getBoundingClientRect();
-        var X = (c.x0 - r.left - c.view.tx) / c.view.s;
-        var Y = (c.y0 - r.top - c.view.ty) / c.view.s;
-        if (X >= 0 && Y >= 0 && X <= S.scene.width && Y <= S.scene.height) finish('click', X, Y);
+      if (e.type === 'pointerup' && c.ok && c.token === S.token && pointers.size === 0) {
+        if (c.type === 'mouse') clickAt(c); else tapAt(c);
       }
     }
     if (pointers.size === 1) {
@@ -861,14 +1022,59 @@
     } else if (pointers.size === 0) {
       gesture = null;
       el.stage.classList.remove('dragging');
+      drawAim();
     }
   }
   el.stage.addEventListener('pointerup', endPointer);
   el.stage.addEventListener('pointercancel', endPointer);
   el.stage.addEventListener('lostpointercapture', endPointer);
+  el.stage.addEventListener('pointerleave', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    S.mouse = null;
+    if (S.aimBy === 'mouse') { S.aim = null; S.aimBy = ''; drawAim(); }
+  });
+
+  // where a click or tap landed: stage px, and scene px in the view it started in
+  function downPoint(c) {
+    var r = el.stage.getBoundingClientRect();
+    var x = c.x0 - r.left;
+    var y = c.y0 - r.top;
+    return { x: x, y: y, X: (x - c.view.tx) / c.view.s, Y: (y - c.view.ty) / c.view.s };
+  }
+
+  // mouse: the click answers right where the square was drawn
+  function clickAt(c) {
+    var p = downPoint(c);
+    if (c.phase === 'round' && S.phase === 'round' && inScene(p.X, p.Y)) finish('click', p.X, p.Y);
+  }
+
+  // touch: a tap places the square, a tap on it answers, a double tap zooms in
+  function tapAt(c) {
+    var p = downPoint(c);
+    var now = performance.now();
+    var prev = S.lastTap;
+    S.lastTap = { t: now, x: p.x, y: p.y };
+    if (prev && now - prev.t < CFG.doubleTapMs && Math.hypot(p.x - prev.x, p.y - prev.y) < 40) {
+      window.clearTimeout(S.tapTimer);
+      S.tapTimer = 0;
+      S.lastTap = null;
+      zoomBy(CFG.tapZoom, p.x, p.y, true);
+      return;
+    }
+    if (c.phase !== 'round' || S.phase !== 'round' || !inScene(p.X, p.Y)) return;
+    var a = S.aim;
+    var reach = Math.max(CFG.square / 2, 22 / c.view.s);   // small squares still get a 44 px target
+    if (a && S.aimBy === 'touch' && Math.abs(p.X - a.X) <= reach && Math.abs(p.Y - a.Y) <= reach) {
+      // answer a moment later: a 2nd tap in that time is a double tap (zoom), not an answer
+      S.tapTimer = window.setTimeout(function () { S.tapTimer = 0; lockIn(); }, CFG.doubleTapMs);
+      return;
+    }
+    setAim(p.X, p.Y, 'touch');
+  }
 
   el.stage.addEventListener('wheel', function (e) {
     if (S.screen !== 'round') return;
+    if (S.phase === 'reveal' && !e.ctrlKey) return;   // after an answer the wheel scrolls to the results; ctrl+wheel and pinch still zoom
     e.preventDefault();
     if (!canView()) return;
     var dy = e.deltaY;
@@ -893,22 +1099,64 @@
 
   /* ---------- keyboard ---------- */
 
-  function answerAtCenter() {
-    if (S.phase !== 'round') return;
+  // The keyboard square starts where the mouse square was, or mid-view. Enter answers only once it is shown.
+  function armKeys() {
+    if (S.phase !== 'round' || S.aimBy === 'key') return;
     var v = S.view;
-    var X = clamp((S.stageW / 2 - v.tx) / v.s, 0, S.scene.width);
-    var Y = clamp((S.stageH / 2 - v.ty) / v.s, 0, S.scene.height);
-    finish('click', X, Y);
+    var a = S.aim;
+    var x = a ? a.X * v.s + v.tx : -1;
+    var y = a ? a.Y * v.s + v.ty : -1;
+    if (a && x >= 0 && x <= S.stageW && y >= 0 && y <= S.stageH) setAim(a.X, a.Y, 'key');
+    else setAim((S.stageW / 2 - v.tx) / v.s, (S.stageH / 2 - v.ty) / v.s, 'key');
+  }
+
+  // Arrow keys look around (dx, dy in screen px): the view pans, and where it can't pan further
+  // the square itself moves, so Waldos at the edges are reachable.
+  function nudge(dx, dy) {
+    if (!canView()) return;
+    if (S.phase !== 'round') { panBy(-dx, -dy); return; }
+    stopAnim();
+    armKeys();
+    var v = S.view;
+    var c = { x: S.stageW / 2, y: S.stageH / 2 };
+    var p = { x: S.aim.X * v.s + v.tx, y: S.aim.Y * v.s + v.ty };
+    if (p.x < 0 || p.x > S.stageW || p.y < 0 || p.y > S.stageH) p = { x: c.x, y: c.y };   // lost off screen: back to the middle
+    var d = { x: dx, y: dy };
+    ['x', 'y'].forEach(function (k) {
+      // a square off to one side first comes back to the middle
+      var back = c[k] - p[k];
+      if (d[k] * back > 0) {
+        var m = Math.abs(back) < Math.abs(d[k]) ? back : d[k];
+        p[k] += m;
+        d[k] -= m;
+      }
+    });
+    var nv = clampView({ s: v.s, tx: v.tx - d.x, ty: v.ty - d.y });
+    p.x += d.x - (v.tx - nv.tx);   // the part the view could not pan moves the square
+    p.y += d.y - (v.ty - nv.ty);
+    S.view = nv;
+    setAim((p.x - nv.tx) / nv.s, (p.y - nv.ty) / nv.s, 'key');
+    applyView();
+  }
+
+  // + and - zoom around the keyboard square while there is one
+  function keyZoom(factor) {
+    if (S.phase === 'round') armKeys();
+    var b = S.animTo || S.view;
+    var a = S.aimBy === 'key' && S.aim ? S.aim : null;
+    zoomBy(factor, a ? a.X * b.s + b.tx : null, a ? a.Y * b.s + b.ty : null, true);
   }
 
   document.addEventListener('keydown', function (e) {
+    S.keyNav = e.key === 'Tab';
     if (e.metaKey || e.ctrlKey || e.altKey) return;   // leave browser shortcuts alone
     var t = e.target;
     var interactive = !!(t && t.closest && t.closest('button, a, input, select, textarea, [contenteditable="true"]'));
     var key = e.key;
 
     if (S.screen === 'start') {
-      if (key === 'Enter' && !interactive && !e.repeat && S.data && S.scenes.length) {
+      // Enter starts from anywhere on the start screen, mode buttons included (links in the header still work)
+      if (key === 'Enter' && (!interactive || el.start.contains(t)) && !e.repeat && S.data && S.scenes.length) {
         e.preventDefault();
         startGame(S.mode);
       }
@@ -918,19 +1166,21 @@
 
     switch (key) {
       case '+': case '=': case 'Add':
-        e.preventDefault(); zoomBy(CFG.zoomStep, null, null, true); return;
+        e.preventDefault(); keyZoom(CFG.zoomStep); return;
       case '-': case '_': case 'Subtract':
-        e.preventDefault(); zoomBy(1 / CFG.zoomStep, null, null, true); return;
+        e.preventDefault(); keyZoom(1 / CFG.zoomStep); return;
       case '0':
-        e.preventDefault(); if (canView()) animateTo(fitView(), 260); return;
+        e.preventDefault();
+        if (canView()) { if (S.phase === 'round') armKeys(); animateTo(fitView(), 260); }
+        return;
       case 'ArrowLeft': case 'ArrowRight': case 'ArrowUp': case 'ArrowDown':
-        // pan only when focus is on the picture or its controls; elsewhere arrows scroll the page as usual
+        // only when focus is on the picture or its controls; elsewhere arrows scroll the page as usual
         if (t !== el.stage && t !== document.body && !el.roundBar.contains(t)) return;
         e.preventDefault();
-        if (key === 'ArrowLeft') panBy(CFG.panStep, 0);
-        else if (key === 'ArrowRight') panBy(-CFG.panStep, 0);
-        else if (key === 'ArrowUp') panBy(0, CFG.panStep);
-        else panBy(0, -CFG.panStep);
+        if (key === 'ArrowLeft') nudge(-CFG.panStep, 0);
+        else if (key === 'ArrowRight') nudge(CFG.panStep, 0);
+        else if (key === 'ArrowUp') nudge(0, -CFG.panStep);
+        else nudge(0, CFG.panStep);
         return;
       case 'g': case 'G':
         if (S.phase === 'round' && !e.repeat) { e.preventDefault(); giveUp(); }
@@ -943,11 +1193,16 @@
         if (S.phase === 'reveal' && !interactive) { e.preventDefault(); nextPicture(); return; }
         if (S.phase === 'round' && t === el.stage) {
           e.preventDefault();               // Space never scrolls the page away from the picture
-          if (key === 'Enter') answerAtCenter();
+          if (key !== 'Enter') return;
+          // a fresh picture's 1st Enter only shows the square, so a double Enter on Next can't answer blind
+          if (S.aimBy === 'key' || S.aimBy === 'touch') lockIn(); else armKeys();
         }
         return;
     }
   });
+
+  // Tabbing to the picture shows the keyboard square
+  el.stage.addEventListener('focus', function () { if (S.keyNav) armKeys(); });
 
   /* ---------- summary ---------- */
 
@@ -959,19 +1214,21 @@
     clearOverlay();
     var n = g.results.length;
     var M = modelCount();
-    var youFound = g.results.filter(function (r) { return r.found; }).length;
-    var youMed = median(g.results.map(function (r) { return r.seconds; }));
+    var youHits = g.results.map(function (r) { return r.found; });
+    var youFound = youHits.filter(Boolean).length;
+    // your time to find Waldo: only the scenes you found (null if none)
+    var youMed = median(g.results.filter(function (r) { return r.found; }).map(function (r) { return r.seconds; }));
 
-    var rows = [{ you: true, name: 'You', maker: 'Human', found: youFound, med: youMed, rate: null, order: -1 }];
+    var rows = [{ you: true, name: 'You', maker: 'Human', found: youFound, hits: youHits, med: youMed, rate: null, order: -1 }];
     S.models.forEach(function (m, i) {
-      var f = 0;
+      var hits = [];
       var secs = [];
       g.results.forEach(function (r) {
         var p = pickOf(r.scene, m);
-        if (p.found) f++;
+        hits.push(p.found);
         if (isNum(p.seconds)) secs.push(p.seconds);
       });
-      rows.push({ you: false, name: m.name, maker: m.maker, found: f, med: median(secs), rate: m.found_rate, order: i });
+      rows.push({ you: false, name: m.name, maker: m.maker, found: hits.filter(Boolean).length, hits: hits, med: median(secs), rate: m.found_rate, order: i });
     });
     rows.sort(function (a, b) {
       if (b.found !== a.found) return b.found - a.found;
@@ -986,18 +1243,20 @@
 
     el.sumKicker.textContent = 'The human division · ' + modeName(g.mode);
     el.sumTitle.textContent = 'You found ' + youFound + ' of ' + n + '.';
-    var lede = 'Your median time was ' + fmtS(youMed) + ' s per picture, misses included. Ranked by pictures found, you ' +
-      (tiedWith.length ? 'tie for ' : 'come ') + ordinal(youRow.rank) + ' of ' + rows.length + ' on these ' + n + ' pictures';
-    if (tiedWith.length === 1) lede += ', level with ' + tiedWith[0].name;
-    else if (tiedWith.length > 1 && tiedWith.length <= 3) lede += ', level with ' + tiedWith.slice(0, -1).map(function (r) { return r.name; }).join(', ') + ' and ' + tiedWith[tiedWith.length - 1].name;
-    else if (tiedWith.length > 3) lede += ', level with ' + tiedWith.length + ' models';
+    var lede = 'Rank: ' + ordinal(youRow.rank) + ' of ' + rows.length;
+    if (tiedWith.length === 1) lede += ', tied with ' + tiedWith[0].name;
+    else if (tiedWith.length > 1 && tiedWith.length <= 3) lede += ', tied with ' + tiedWith.slice(0, -1).map(function (r) { return r.name; }).join(', ') + ' and ' + tiedWith[tiedWith.length - 1].name;
+    else if (tiedWith.length > 3) lede += ', tied with ' + tiedWith.length + ' models';
     lede += '.';
+    if (isNum(youMed)) lede += ' Median time to find Waldo: ' + fmtS(youMed) + ' s.';
     el.sumLede.textContent = lede;
 
     // table
     clearNode(el.sumBody);
+    var youTr = null;
     rows.forEach(function (r) {
       var tr = node('tr', r.you ? 'you' : '');
+      if (r.you) youTr = tr;
       tr.appendChild(node('td', 'rk num', String(r.rank)));
       var who = node('td', 'l');
       who.appendChild(node('span', 'who', r.name));
@@ -1009,25 +1268,21 @@
       var fc = node('td', 'fc num');
       fc.appendChild(node('b', null, String(r.found)));
       fc.appendChild(node('span', 'of', ' / ' + n));
+      // 1 cell per picture, in play order (same as the pips): green found, red missed
       var meter = node('span', 'meter');
       meter.setAttribute('aria-hidden', 'true');
-      for (var i = 0; i < n; i++) meter.appendChild(node('i', i < r.found ? 'on' : ''));
+      r.hits.forEach(function (hit) { meter.appendChild(node('i', hit ? 'found' : 'miss')); });
       fc.appendChild(meter);
       tr.appendChild(fc);
-      tr.appendChild(node('td', 'num', isNum(r.med) ? fmtS(r.med) + ' s' : '—'));
-      tr.appendChild(node('td', 'num all hide-sm', isNum(r.rate) ? Math.round(r.rate * 100) + '%' : '—'));
+      tr.appendChild(node('td', 'num', isNum(r.med) ? fmtS(r.med) + ' s' : '–'));
+      tr.appendChild(node('td', 'num all hide-sm', isNum(r.rate) ? Math.round(r.rate * 100) + '%' : '–'));
       el.sumBody.appendChild(tr);
     });
 
     // note on timing
-    var ds = S.data.dataset || {};
-    var perPic = isNum(ds.tiles) && isNum(ds.pictures) && ds.pictures ? Math.round(ds.tiles / ds.pictures) : 211;
-    var oneCall = S.models.filter(function (m) { return m.method && m.method !== 'parallel'; });
-    var note = 'Model times are whole-search wall times: about ' + perPic + ' tile requests sent in parallel per picture';
-    if (oneCall.length) note += ' (' + oneCall.map(function (m) { return m.name; }).join(', ') + ': one call)';
-    note += '. Your time runs from the moment the picture appears to your answer, capped at ' + CFG.capSeconds +
-      ' s. Humans and models were not timed under the same conditions, so read the times as context, not a race. ';
-    note += 'An unfinished model search counts as a miss. “All ' + S.scenes.length + ' scenes” is each model’s found rate on the full benchmark.';
+    var note = 'Model time: per scene, counting only successful requests (1 request per tile, 16 at a time; whole-scene methods: 1 request). ';
+    note += 'Your time: from when the scene appears to your answer, max ' + CFG.capSeconds + ' s. The 2 times are not directly comparable. ';
+    note += '“All scenes”: found rate on all ' + S.scenes.length + ' scenes.';
     el.sumNote.textContent = note;
 
     // best per mode
@@ -1037,9 +1292,12 @@
     if (!saved.stored) {
       el.sumBest.hidden = true;
     } else if (saved.better) {
-      el.sumBest.appendChild(node('b', null, 'New best on ' + modeName(g.mode) + '.'));
-      if (saved.prev) el.sumBest.appendChild(document.createTextNode(' Previous best: ' + bestText(saved.prev) + '.'));
-      el.sumBest.hidden = false;
+      // a first round, or a round with nothing found, is no "new best"
+      if (saved.prev && youFound > 0) {
+        el.sumBest.appendChild(node('b', null, 'New best on ' + modeName(g.mode) + '.'));
+        el.sumBest.appendChild(document.createTextNode(' Previous best: ' + bestText(saved.prev) + '.'));
+      }
+      el.sumBest.hidden = !el.sumBest.firstChild;
     } else if (saved.best) {
       el.sumBest.appendChild(document.createTextNode('Your best on ' + modeName(g.mode) + ': '));
       el.sumBest.appendChild(node('b', null, bestText(saved.best)));
@@ -1057,16 +1315,16 @@
       var fig = node('figure', 'scene-tile sum-tile');
       var im = node('img');
       im.src = sc.thumb || sc.image;
-      im.alt = 'Scene ' + sc.id;
+      im.alt = sceneName(sc);
       im.loading = 'lazy';
       fig.appendChild(im);
       var cap = node('figcaption');
       var line = node('div', 'cap');
-      line.appendChild(node('span', 'id', sc.id));
+      line.appendChild(node('span', 'id', sceneName(sc)));
       var label = r.found ? 'Found ' + fmtS(r.seconds) + ' s' : (r.how === 'timeout' ? 'Time’s up' : (r.how === 'giveup' ? 'Gave up' : 'Missed'));
       line.appendChild(node('span', 'tag ' + (r.found ? 'found' : 'miss'), label));
       cap.appendChild(line);
-      cap.appendChild(node('div', 'sub', 'Found by ' + foundBy(sc) + ' of ' + M + ' models'));
+      cap.appendChild(node('div', 'sub', 'Found by ' + foundBy(sc) + ' of ' + M));
       fig.appendChild(cap);
       el.sumGrid.appendChild(fig);
     });
@@ -1076,9 +1334,12 @@
     el.switchBtn.hidden = other === 'hard' && !S.hardPool.length;
 
     showScreen('summary');
-    window.scrollTo(0, 0);
+    jumpTo(0);
+    // short windows: scroll just enough to show your row
+    var below = youTr.getBoundingClientRect().bottom - window.innerHeight + 16;
+    if (below > 0) jumpTo(below);
     try { el.sumTitle.focus({ preventScroll: true }); } catch (e) { el.sumTitle.focus(); }
-    announce('You found ' + youFound + ' of ' + n + '. Median ' + fmtS(youMed) + ' seconds.');
+    announce('You found ' + youFound + ' of ' + n + '.' + (isNum(youMed) ? ' Median ' + fmtS(youMed) + ' seconds to find Waldo.' : ''));
   }
 
   /* ---------- wiring ---------- */
@@ -1092,6 +1353,7 @@
   el.zoomOut.addEventListener('click', function () { zoomBy(1 / CFG.zoomStep, null, null, true); });
   el.zoomFit.addEventListener('click', function () { if (canView()) animateTo(fitView(), 260); });
   el.giveUp.addEventListener('click', giveUp);
+  el.lockIn.addEventListener('click', lockIn);
   el.toWaldo.addEventListener('click', zoomToWaldo);
   el.next.addEventListener('click', nextPicture);
   el.again.addEventListener('click', function () { startGame(S.game ? S.game.mode : S.mode); });
@@ -1136,7 +1398,7 @@
     S.scenes = (Array.isArray(data.scenes) ? data.scenes : []).filter(function (s) {
       return s && s.image && isBox(s.truth) && isNum(s.width) && isNum(s.height) && s.width > 0 && s.height > 0;
     });
-    S.hardPool = S.scenes.filter(function (s) { return foundBy(s) <= CFG.hardMaxFound; });
+    S.hardPool = S.scenes.filter(function (s) { return foundBy(s) <= hardMax(); });
     el.thAll.textContent = 'All ' + S.scenes.length + ' scenes';
     renderCredit(data);
     initStart();

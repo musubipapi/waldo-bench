@@ -91,13 +91,97 @@ def search(client, key, page, cases, scene_uri, tile_uris, reference_uri, repeat
     return row
 
 
+def zoom_search(client, key, page, coarse, fine, scene_uri, uris, reference_uri, metadata, budget, log):
+    """TypeSafe's documented search: a Choice among the scene's large tiles, then a Choice among the small tiles
+    whose centre lies inside the chosen one ("repeat on the chosen tile"). The small tile it picks is its answer."""
+    started = time.perf_counter()
+    row = {"model": ALIAS, "page": page["page"], "id": page["id"], "scene_group": page["scene_group"],
+           "repeat": 0, "complete": False, "found": False, "error": None}
+    meta = {"page": page["page"], "repeat": 0}
+    response, error, calls = openrouter.ask(client, key, ALIAS, choice_payload(scene_uri, [uris[c["id"]] for c in coarse], reference_uri),
+                                            metadata, budget, {**meta, "step": "choice-coarse"})
+    log(calls)
+    big = None if error else {f"tile_{i}": c for i, c in enumerate(coarse, 1)}.get(response["answers"]["tile"].get("choice"))
+    if big is None:
+        row.update(error=error or "Choice outside the options", wall_s=time.perf_counter() - started)
+        return row
+    b = big["box_pixels"]
+    inside = [c for c in fine if b[0] <= (c["box_pixels"][0] + c["box_pixels"][2]) / 2 < b[2] and b[1] <= (c["box_pixels"][1] + c["box_pixels"][3]) / 2 < b[3]]
+    response, error, calls = openrouter.ask(client, key, ALIAS, choice_payload(uris[big["id"]], [uris[c["id"]] for c in inside], reference_uri),
+                                            metadata, budget, {**meta, "step": "choice-fine"})
+    log(calls)
+    answer = None if error else response["answers"]["tile"]
+    chosen = None if answer is None else {f"tile_{i}": c for i, c in enumerate(inside, 1)}.get(answer.get("choice"))
+    if chosen is None:
+        row.update(error=error or "Choice outside the options", coarse_tile=big["id"], wall_s=time.perf_counter() - started)
+        return row
+    probabilities = answer.get("probabilities") or {}
+    row.update(complete=True, found=chosen["positive"], coarse_tile=big["id"], chosen_tile=chosen["id"], chosen_box=chosen["box_pixels"],
+               chosen_probability=probabilities.get(answer["choice"]),
+               probabilities={c["id"]: probabilities.get(f"tile_{i}") for i, c in enumerate(inside, 1)},
+               wall_s=time.perf_counter() - started)
+    return row
+
+
+def run_zoom(manifest_path: Path, coarse_path: Path, source: Path, output: Path, max_attempts=1000, max_cost_usd=1.0,
+             env_file=Path(".env"), limit_pages=None) -> dict:
+    """Every scene once, one scene at a time (the same condition as the other runs), with zoom_search."""
+    fine_tiles, coarse_tiles = dataset.load(manifest_path), dataset.load(coarse_path)
+    pages = fine_tiles["pages"][:limit_pages] if limit_pages else fine_tiles["pages"]
+    if (output / "config.json").exists():
+        raise ValueError(f"{output} already holds a run")
+    output.mkdir(parents=True, exist_ok=True)
+    reference_raw, reference = dataset.reference_picture(source)
+    (output / "reference.jpg").write_bytes(reference_raw)
+    fine, coarse = defaultdict(list), defaultdict(list)
+    for case in fine_tiles["cases"]:
+        fine[case["page"]].append(case)
+    for case in coarse_tiles["cases"]:
+        coarse[case["page"]].append(case)
+    uris = {c["id"]: data_uri((manifest_path.parent / c["image"]).read_bytes()) for c in fine_tiles["cases"]}
+    uris.update({c["id"]: data_uri((coarse_path.parent / c["image"]).read_bytes()) for c in coarse_tiles["cases"]})
+    key = openrouter.read_key(env_file)
+    budget = openrouter.Budget(max_attempts, max_cost_usd)
+    lock = threading.Lock()
+
+    def log(calls):
+        with lock:
+            for call in calls:
+                append_json(output / "calls.jsonl", call)
+    with httpx.Client(timeout=120) as client:
+        metadata = openrouter.catalog(client, [ALIAS])
+        write_json(output / "models.json", metadata)
+        if not image_checks(client, key, metadata, budget, log):
+            raise RuntimeError("Jev did not read images in the options or instructions; see calls.jsonl")
+        write_json(output / "config.json", {
+            "created_at": now(), "model": ALIAS, "method": "zoom", "repeat": 1, "concurrency": 1, "seed": SEED,
+            "api_url": openrouter.API_URL, "prompts": {"choice_lead": CHOICE_LEAD, "detail": DETAIL}, "reference": reference,
+            "planned_searches": len(pages), "manifest_sha256": sha(manifest_path.read_bytes()), "coarse_manifest_sha256": sha(coarse_path.read_bytes()),
+            "retries": "Only HTTP 429/529, at most three attempts."})
+        jobs = list(pages)
+        random.Random(SEED).shuffle(jobs)
+        reference_uri = data_uri(reference_raw)
+        for done, page in enumerate(jobs, 1):
+            scene_uri = data_uri((manifest_path.parent / page["scene_image"]).read_bytes())
+            row = zoom_search(client, key, page, coarse[page["page"]], fine[page["page"]], scene_uri, uris, reference_uri, metadata, budget, log)
+            append_json(output / "searches.jsonl", row)
+            if done % 10 == 0 or done == len(jobs):
+                print(f"{done}/{len(jobs)} searches | {budget.attempts} requests | ${budget.cost:.5f}", flush=True)
+    rows = read_jsonl(output / "searches.jsonl")
+    summary = {"found": sum(r["found"] for r in rows), "searches": len(rows), "complete_searches": sum(r["complete"] for r in rows),
+               "known_cost_usd": budget.cost, "errors": [r["error"] for r in rows if r["error"]][:5]}
+    write_json(output / "summary.json", summary)
+    print(json.dumps(summary), flush=True)
+    return summary
+
+
 def summarize(output: Path) -> dict:
     rows = read_jsonl(output / "searches.jsonl")
     calls = [c for c in read_jsonl(output / "calls.jsonl") if c["step"] == "choice-all"]
     known = sum((Decimal(str(openrouter.usage_cost(c))) for c in calls if openrouter.usage_cost(c) is not None), Decimal(0))
     groups = defaultdict(list)
     for row in rows:
-        groups[row["scene_group"]].append(row["found"])
+        groups[row["id"]].append(row["found"])
     groups = list(groups.values())
     rng = random.Random(SEED)
     boot = [statistics.mean(v for g in rng.choices(groups, k=len(groups)) for v in g) for _ in range(4000)]

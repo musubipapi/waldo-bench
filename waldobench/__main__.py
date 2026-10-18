@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from . import dataset, results, search_jev, search_tiles, site
+from . import dataset, results, search_batched, search_jev, search_tiles, site
 from .common import ROOT
 from .models import MODELS, TILE_MODELS
 
@@ -54,6 +54,13 @@ def main(argv=None):
 
     step = steps.add_parser("run-jev", help="Jev 1.14: one Choice request per scene (costs money)")
     run_options(step, "runs/jev-128", 1.0, 1000)
+    step.add_argument("--zoom", action="store_true", help="TypeSafe's search: a Choice among large tiles, then among the small tiles inside")
+    step.add_argument("--coarse-tiles", type=Path, default=ROOT / "data/tiles-384/manifest.json", help="with --zoom: the large tiles")
+
+    step = steps.add_parser("run-batched", help="one request per scene with a yes/no question per tile (costs money)")
+    run_options(step, "runs/batched-128", 1.0, 1000)
+    step.add_argument("--model", choices=list(MODELS), default="jev", help="a model that reads images inside questions")
+    step.add_argument("--redo-failed", action="store_true", help="finish an existing run: redo its failed scenes one at a time")
 
     step = steps.add_parser("results", help="combine runs into the leaderboard and likely ranges")
     step.add_argument("--runs", type=Path, default=RUNS_FILE, help="which runs make up the results")
@@ -80,8 +87,15 @@ def main(argv=None):
                                           args.redo_slow if round_number == 0 else None)
             if summary["complete"] and all(m["complete_searches"] == m["searches"] for m in summary["models"].values()):
                 break
+    elif args.step == "run-jev" and args.zoom:
+        search_jev.run_zoom(args.tiles, args.coarse_tiles, args.source, args.output, args.max_attempts, args.max_cost_usd, args.env_file, args.limit_pages)
     elif args.step == "run-jev":
         search_jev.run(args.tiles, args.source, args.output, 1, args.concurrency, args.max_attempts, args.max_cost_usd, args.env_file, args.limit_pages)
+    elif args.step == "run-batched" and args.redo_failed:
+        print(f"Redid {search_batched.redo_failed(args.tiles, args.output, args.max_attempts, args.max_cost_usd, args.env_file)} scenes")
+    elif args.step == "run-batched":
+        search_batched.run(args.tiles, args.source, args.output, args.model, args.concurrency, args.max_attempts, args.max_cost_usd,
+                           args.env_file, args.limit_pages)
     elif args.step == "results":
         result = results.build(args.runs, args.output)
         for e in result["headline"]:

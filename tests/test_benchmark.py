@@ -30,7 +30,7 @@ class Scoring(unittest.TestCase):
 
 class Requests(unittest.TestCase):
     def test_tile_request_sends_reference_then_tile_and_no_label(self):
-        body = search_tiles.payload("decider", "data:image/jpeg;base64,REF", "data:image/jpeg;base64,TILE")
+        body = search_tiles.payload("decider-1.2", "data:image/jpeg;base64,REF", "data:image/jpeg;base64,TILE")
         self.assertEqual([p["image_url"]["url"] for p in body["state"]], ["data:image/jpeg;base64,REF", "data:image/jpeg;base64,TILE"])
         self.assertEqual(body["questions"]["present"]["type"], "noul")
         self.assertEqual(body["provider"], {"order": ["perplexity"], "allow_fallbacks": False})
@@ -55,7 +55,7 @@ class Tiling(unittest.TestCase):
 
 class Statistics(unittest.TestCase):
     def test_likely_range_and_head_to_head_are_repeatable(self):
-        lead = [{"id": f"1_{i}", "scene_group": f"g{i}", "found": i % 5 != 0} for i in range(1, 41)]
+        lead = [{"id": f"1_{i}", "found": i % 5 != 0} for i in range(1, 41)]
         other = [{**r, "found": i % 2 == 0} for i, r in enumerate(lead)]
         self.assertEqual(results.likely_range(lead), results.likely_range(lead))
         low, high = results.likely_range(lead)

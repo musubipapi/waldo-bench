@@ -1,198 +1,319 @@
 {
   "benchmark": "Waldo Bench",
-  "date": "2026-10-16",
+  "date": "2026-10-18",
   "headline_tile_px": 128,
   "scenes": 66,
   "headline": [
     {
       "model": "d1-ultra",
+      "run_model": "d1-ultra",
       "name": "Liquid d1-ultra",
       "model_id": "liquid/d1-ultra",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
       "passes": 1,
       "searches": 66,
-      "found": 55,
-      "found_rate": 0.8333333333333334,
+      "found": 53,
+      "found_rate": 0.803030303030303,
       "found_ci95": [
-        0.7384615384615385,
-        0.9117647058823529
+        0.7121212121212122,
+        0.8939393939393939
       ],
       "complete_searches": 66,
-      "p50_search_s": 4.052390646014828,
-      "p95_search_s": 6.155836510297377,
-      "usd_per_scene": 0.005376244363635196,
-      "http_attempts": 14371,
+      "p50_search_s": 3.3595324794296175,
+      "p95_search_s": 5.746288729918888,
+      "usd_per_scene": 0.005222455636362527,
+      "http_attempts": 14173,
       "rank": 1,
       "beaten_by": []
     },
     {
       "model": "d1",
+      "run_model": "d1",
       "name": "Liquid d1",
       "model_id": "liquid/d1",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 49,
+      "found_rate": 0.7424242424242424,
+      "found_ci95": [
+        0.6363636363636364,
+        0.8484848484848485
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.516558956995141,
+      "p95_search_s": 6.766055831831181,
+      "usd_per_scene": 0.0024868836363635474,
+      "http_attempts": 13957,
+      "rank": 2,
+      "beaten_by": []
+    },
+    {
+      "model": "jev-batched",
+      "run_model": "jev",
+      "name": "Jev 1.14 (yes/no, batched)",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "batched",
+      "run": "runs/v2c-jev-batched-128",
+      "timing_run": "runs/v2c-jev-batched-128",
       "passes": 1,
       "searches": 66,
       "found": 48,
       "found_rate": 0.7272727272727273,
       "found_ci95": [
-        0.6153846153846154,
+        0.6212121212121212,
         0.8333333333333334
       ],
       "complete_searches": 66,
-      "p50_search_s": 5.981186792021617,
-      "p95_search_s": 11.39484152154182,
-      "usd_per_scene": 0.0026007418181817252,
-      "http_attempts": 14603,
-      "rank": 2,
-      "beaten_by": []
-    },
-    {
-      "model": "decider",
-      "name": "Decider V1.1 27B",
-      "model_id": "perplexity/pplx-decider-v1.1-27b",
-      "tile_px": 128,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 47,
-      "found_rate": 0.7121212121212122,
-      "found_ci95": [
-        0.6,
-        0.8153846153846154
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 9.100294917006977,
-      "p95_search_s": 16.762917989253765,
-      "usd_per_scene": 0.002158349999999562,
-      "http_attempts": 14392,
-      "rank": 3,
-      "beaten_by": [
-        "span-02"
-      ]
-    },
-    {
-      "model": "span-02",
-      "name": "Respan Span-02",
-      "model_id": "respan/span-02",
-      "tile_px": 128,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 47,
-      "found_rate": 0.7121212121212122,
-      "found_ci95": [
-        0.5970149253731343,
-        0.8208955223880597
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 3.760624541551806,
-      "p95_search_s": 6.240717708191369,
-      "usd_per_scene": 0.001958028181818813,
-      "http_attempts": 17368,
-      "rank": 3,
-      "beaten_by": []
-    },
-    {
-      "model": "jev",
-      "name": "Jev 1.14",
-      "model_id": "typesafe/jev-1.14",
-      "tile_px": 128,
-      "method": "one-call",
-      "run": "runs/ivsn-jev-flat128-v2",
-      "timing_run": "runs/ivsn-jev-flat128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 47,
-      "found_rate": 0.7121212121212122,
-      "found_ci95": [
-        0.6,
-        0.8181818181818182
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 2.61264685401693,
-      "p95_search_s": 4.864894239988644,
-      "usd_per_scene": 0.004094859363636363,
+      "p50_search_s": 1.544920437503606,
+      "p95_search_s": 2.2146997187519446,
+      "usd_per_scene": 0.005089873090909091,
       "http_attempts": 66,
       "rank": 3,
       "beaten_by": []
     },
     {
+      "model": "jev-tiles",
+      "run_model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 48,
+      "found_rate": 0.7272727272727273,
+      "found_ci95": [
+        0.6212121212121212,
+        0.8333333333333334
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.387046895280946,
+      "p95_search_s": 2.8217845110048074,
+      "usd_per_scene": 0.01125850536363604,
+      "http_attempts": 13957,
+      "rank": 3,
+      "beaten_by": [
+        "jev-batched"
+      ]
+    },
+    {
+      "model": "decider-flash-1.2",
+      "run_model": "decider-flash-1.2",
+      "name": "Decider Flash V1.2",
+      "model_id": "perplexity/pplx-decider-flash-v1.2",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.5909090909090909,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.6137990414281376,
+      "p95_search_s": 3.548495258699404,
+      "usd_per_scene": 0.0010467749999997576,
+      "http_attempts": 14934,
+      "rank": 5,
+      "beaten_by": []
+    },
+    {
+      "model": "span-02",
+      "run_model": "span-02",
+      "name": "Respan Span-02",
+      "model_id": "respan/span-02",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6056818181818183,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.3082629156997427,
+      "p95_search_s": 4.620119823724963,
+      "usd_per_scene": 0.0015923668181821783,
+      "http_attempts": 14173,
+      "rank": 5,
+      "beaten_by": [
+        "decider-flash-1.2"
+      ]
+    },
+    {
+      "model": "mercury",
+      "run_model": "mercury",
+      "name": "Mercury Decide",
+      "model_id": "inception/mercury-decide",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6060606060606061,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.751325957360677,
+      "p95_search_s": 6.171600595029304,
+      "usd_per_scene": 0.001964317878787847,
+      "http_attempts": 17200,
+      "rank": 5,
+      "beaten_by": [
+        "decider-flash-1.2",
+        "span-02"
+      ]
+    },
+    {
+      "model": "decider-1.2",
+      "run_model": "decider-1.2",
+      "name": "Decider V1.2",
+      "model_id": "perplexity/pplx-decider-v1.2",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.5909090909090909,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.591406832507346,
+      "p95_search_s": 5.782544698449783,
+      "usd_per_scene": 0.002093549999999515,
+      "http_attempts": 13957,
+      "rank": 5,
+      "beaten_by": [
+        "decider-flash-1.2",
+        "span-02"
+      ]
+    },
+    {
       "model": "clef",
+      "run_model": "clef",
       "name": "Clef",
       "model_id": "cloudflare/clef",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
       "passes": 1,
       "searches": 66,
       "found": 46,
       "found_rate": 0.696969696969697,
       "found_ci95": [
-        0.5882352941176471,
-        0.8
+        0.5757575757575758,
+        0.803030303030303
       ],
       "complete_searches": 66,
-      "p50_search_s": 9.77339883352397,
-      "p95_search_s": 14.990554082964081,
+      "p50_search_s": 8.194618894951418,
+      "p95_search_s": 11.09564029154717,
       "usd_per_scene": 0.027406472727265662,
-      "http_attempts": 14015,
-      "rank": 6,
+      "http_attempts": 14056,
+      "rank": 9,
       "beaten_by": [
         "d1-ultra",
         "d1",
+        "jev-batched",
+        "jev-tiles",
+        "decider-flash-1.2",
         "span-02",
-        "decider",
-        "jev"
+        "mercury",
+        "decider-1.2"
       ]
     },
     {
-      "model": "clef-flash",
-      "name": "Clef Flash",
-      "model_id": "cloudflare/clef-flash",
+      "model": "jev",
+      "run_model": "jev",
+      "name": "Jev 1.14 (Choice)",
+      "model_id": "typesafe/jev-1.14",
       "tile_px": 128,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "method": "one-call",
+      "run": "runs/v2c-jev-choice-128",
+      "timing_run": "runs/v2c-jev-choice-128",
       "passes": 1,
       "searches": 66,
       "found": 45,
       "found_rate": 0.6818181818181818,
       "found_ci95": [
-        0.5691791044776119,
+        0.5757575757575758,
         0.7878787878787878
       ],
       "complete_searches": 66,
-      "p50_search_s": 11.419104249973316,
-      "p95_search_s": 16.813920594053343,
+      "p50_search_s": 1.5098298955126666,
+      "p95_search_s": 1.8394803537230473,
+      "usd_per_scene": 0.004094703454545453,
+      "http_attempts": 66,
+      "rank": 10,
+      "beaten_by": []
+    },
+    {
+      "model": "clef-flash",
+      "run_model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 45,
+      "found_rate": 0.6818181818181818,
+      "found_ci95": [
+        0.5606060606060606,
+        0.7878787878787878
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 13.545885894447565,
+      "p95_search_s": 18.145023436954943,
       "usd_per_scene": 0.004339358181818343,
-      "http_attempts": 13958,
-      "rank": 7,
+      "http_attempts": 14069,
+      "rank": 10,
       "beaten_by": [
         "d1",
+        "decider-flash-1.2",
         "span-02",
-        "decider",
+        "mercury",
+        "decider-1.2",
         "jev"
       ]
     },
     {
       "model": "clef-omni",
+      "run_model": "clef-omni",
       "name": "Clef Omni",
       "model_id": "cloudflare/clef-omni",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
       "passes": 1,
       "searches": 66,
       "found": 44,
@@ -202,43 +323,50 @@
         0.7727272727272727
       ],
       "complete_searches": 66,
-      "p50_search_s": 6.964761499548331,
-      "p95_search_s": 9.082865926699014,
+      "p50_search_s": 6.0165620216866955,
+      "p95_search_s": 6.881022426474374,
       "usd_per_scene": 0.017033884090907503,
-      "http_attempts": 13972,
-      "rank": 8,
+      "http_attempts": 13957,
+      "rank": 12,
       "beaten_by": [
         "d1-ultra",
         "d1",
+        "jev-batched",
+        "jev-tiles",
+        "decider-flash-1.2",
         "span-02",
+        "mercury",
+        "decider-1.2",
         "jev"
       ]
     },
     {
       "model": "luna",
+      "run_model": "luna",
       "name": "GPT-6 Luna Decisions",
       "model_id": "openai/gpt-6-luna-decisions",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
       "passes": 1,
       "searches": 66,
       "found": 35,
       "found_rate": 0.5303030303030303,
       "found_ci95": [
-        0.4116978609625669,
-        0.6470588235294118
+        0.4090909090909091,
+        0.6515151515151515
       ],
       "complete_searches": 66,
-      "p50_search_s": 5.1596277500502765,
-      "p95_search_s": 13.374798677221406,
-      "usd_per_scene": 0.01387097424242643,
-      "http_attempts": 16039,
-      "rank": 9,
+      "p50_search_s": 3.128552562557161,
+      "p95_search_s": 3.851279813912697,
+      "usd_per_scene": 0.012074919696970875,
+      "http_attempts": 14173,
+      "rank": 13,
       "beaten_by": [
-        "d1-ultra",
-        "span-02",
+        "jev-batched",
+        "jev-tiles",
+        "decider-flash-1.2",
         "jev"
       ]
     }
@@ -246,76 +374,106 @@
   "head_to_head": [
     {
       "model": "d1",
-      "gap": 0.10606060606060606,
+      "gap": 0.06060606060606061,
       "ci95": [
-        0.04411764705882353,
-        0.18461538461538463
+        -0.015151515151515152,
+        0.15151515151515152
       ]
     },
     {
-      "model": "decider",
-      "gap": 0.12121212121212122,
+      "model": "jev-batched",
+      "gap": 0.07575757575757576,
       "ci95": [
-        0.03076923076923077,
-        0.21212121212121213
+        -0.015151515151515152,
+        0.16666666666666666
+      ]
+    },
+    {
+      "model": "jev-tiles",
+      "gap": 0.07575757575757576,
+      "ci95": [
+        -0.0003787878787877496,
+        0.16666666666666666
+      ]
+    },
+    {
+      "model": "decider-flash-1.2",
+      "gap": 0.09090909090909091,
+      "ci95": [
+        0.0,
+        0.18181818181818182
       ]
     },
     {
       "model": "span-02",
-      "gap": 0.12121212121212122,
+      "gap": 0.09090909090909091,
       "ci95": [
-        0.03076923076923077,
-        0.22058823529411764
+        0.0,
+        0.18181818181818182
+      ]
+    },
+    {
+      "model": "mercury",
+      "gap": 0.09090909090909091,
+      "ci95": [
+        -0.015151515151515152,
+        0.21212121212121213
+      ]
+    },
+    {
+      "model": "decider-1.2",
+      "gap": 0.09090909090909091,
+      "ci95": [
+        0.015151515151515152,
+        0.18181818181818182
+      ]
+    },
+    {
+      "model": "clef",
+      "gap": 0.10606060606060606,
+      "ci95": [
+        0.015151515151515152,
+        0.21212121212121213
       ]
     },
     {
       "model": "jev",
       "gap": 0.12121212121212122,
       "ci95": [
-        0.015384615384615385,
+        0.015151515151515152,
         0.22727272727272727
       ]
     },
     {
-      "model": "clef",
-      "gap": 0.13636363636363635,
-      "ci95": [
-        0.046153846153846156,
-        0.23076923076923078
-      ]
-    },
-    {
       "model": "clef-flash",
-      "gap": 0.15151515151515152,
+      "gap": 0.12121212121212122,
       "ci95": [
-        0.06060606060606061,
-        0.2537313432835821
+        0.030303030303030304,
+        0.22727272727272727
       ]
     },
     {
       "model": "clef-omni",
-      "gap": 0.16666666666666666,
+      "gap": 0.13636363636363635,
       "ci95": [
-        0.08820332480818416,
-        0.25757575757575757
+        0.045454545454545456,
+        0.22727272727272727
       ]
     },
     {
       "model": "luna",
-      "gap": 0.30303030303030304,
+      "gap": 0.2727272727272727,
       "ci95": [
-        0.18181818181818182,
-        0.4307692307692308
+        0.15151515151515152,
+        0.4090909090909091
       ]
     }
   ],
   "verdict": {
     "leader": "d1-ultra",
-    "leader_clear": true,
-    "budget": "span-02",
-    "significantly_better_than_budget": [
-      "d1-ultra"
-    ]
+    "leader_clear": false,
+    "budget": "decider-flash-1.2",
+    "significantly_better_than_budget": []
   },
   "baselines": {
     "random_tile": {
@@ -327,423 +485,405 @@
   },
   "all_entries": [
     {
-      "model": "jev",
-      "name": "Jev 1.14",
-      "model_id": "typesafe/jev-1.14",
+      "model": "d1-ultra",
+      "run_model": "d1-ultra",
+      "name": "Liquid d1-ultra",
+      "model_id": "liquid/d1-ultra",
       "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-v1",
-      "timing_run": "runs/ivsn-reference-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
-      "found": 25,
-      "found_rate": 0.3787878787878788,
+      "found": 29,
+      "found_rate": 0.4393939393939394,
       "found_ci95": [
-        0.26153846153846155,
-        0.4925373134328358
+        0.3181818181818182,
+        0.5606060606060606
       ],
       "complete_searches": 66,
-      "p50_search_s": 0.4077356669586152,
-      "p95_search_s": 1.2700153647747356,
-      "usd_per_scene": 0.0008130207272727275,
-      "http_attempts": 1008
+      "p50_search_s": 0.3258423749357462,
+      "p95_search_s": 0.6170505627815146,
+      "usd_per_scene": 0.0003771752727272768,
+      "http_attempts": 1023
     },
     {
-      "model": "decider",
-      "name": "Decider V1.1 27B",
-      "model_id": "perplexity/pplx-decider-v1.1-27b",
+      "model": "d1",
+      "run_model": "d1",
+      "name": "Liquid d1",
+      "model_id": "liquid/d1",
       "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-v1",
-      "timing_run": "runs/ivsn-reference-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
+      "passes": 1,
+      "searches": 66,
+      "found": 33,
+      "found_rate": 0.5,
+      "found_ci95": [
+        0.3787878787878788,
+        0.6212121212121212
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.3849010834819637,
+      "p95_search_s": 0.8896875417267438,
+      "usd_per_scene": 0.00017960727272727238,
+      "http_attempts": 1098
+    },
+    {
+      "model": "decider-1.2",
+      "run_model": "decider-1.2",
+      "name": "Decider V1.2",
+      "model_id": "perplexity/pplx-decider-v1.2",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
       "found": 32,
       "found_rate": 0.48484848484848486,
       "found_ci95": [
         0.36363636363636365,
-        0.6153846153846154
+        0.6060606060606061
       ],
       "complete_searches": 66,
-      "p50_search_s": 0.6666420004912652,
-      "p95_search_s": 5.107318250025855,
+      "p50_search_s": 0.45379322953522205,
+      "p95_search_s": 0.820161448296858,
       "usd_per_scene": 0.0001512000000000022,
-      "http_attempts": 1008
+      "http_attempts": 1023
     },
     {
-      "model": "luna",
-      "name": "GPT-6 Luna Decisions",
-      "model_id": "openai/gpt-6-luna-decisions",
+      "model": "decider-flash-1.2",
+      "run_model": "decider-flash-1.2",
+      "name": "Decider Flash V1.2",
+      "model_id": "perplexity/pplx-decider-flash-v1.2",
       "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-v1",
-      "timing_run": "runs/ivsn-reference-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
+      "passes": 1,
+      "searches": 66,
+      "found": 29,
+      "found_rate": 0.4393939393939394,
+      "found_ci95": [
+        0.3181818181818182,
+        0.5606060606060606
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.30114460445474833,
+      "p95_search_s": 0.5288675422198139,
+      "usd_per_scene": 7.56000000000011e-05,
+      "http_attempts": 1098
+    },
+    {
+      "model": "span-02",
+      "run_model": "span-02",
+      "name": "Respan Span-02",
+      "model_id": "respan/span-02",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
+      "passes": 1,
+      "searches": 66,
+      "found": 29,
+      "found_rate": 0.4393939393939394,
+      "found_ci95": [
+        0.3181818181818182,
+        0.5606060606060606
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.3521390205132775,
+      "p95_search_s": 0.9113171245553531,
+      "usd_per_scene": 0.00011500363636363888,
+      "http_attempts": 1038
+    },
+    {
+      "model": "jev-tiles",
+      "run_model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 384,
+      "method": "parallel",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
       "found": 27,
       "found_rate": 0.4090909090909091,
       "found_ci95": [
-        0.2923076923076923,
+        0.2878787878787879,
         0.5303030303030303
       ],
       "complete_searches": 66,
-      "p50_search_s": 0.48320089548360556,
-      "p95_search_s": 1.1996849482820835,
-      "usd_per_scene": 0.0008720727272727113,
-      "http_attempts": 1008
-    },
-    {
-      "model": "clef-flash",
-      "name": "Clef Flash",
-      "model_id": "cloudflare/clef-flash",
-      "tile_px": 384,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-v1",
-      "timing_run": "runs/ivsn-reference-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 27,
-      "found_rate": 0.4090909090909091,
-      "found_ci95": [
-        0.2923076923076923,
-        0.5303030303030303
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 1.2406304585165344,
-      "p95_search_s": 2.397377624438377,
-      "usd_per_scene": 0.0003133963636363583,
-      "http_attempts": 1008
+      "p50_search_s": 0.23936708352994174,
+      "p95_search_s": 0.4370401982741896,
+      "usd_per_scene": 0.0008131206363636376,
+      "http_attempts": 1038
     },
     {
       "model": "clef",
+      "run_model": "clef",
       "name": "Clef",
       "model_id": "cloudflare/clef",
       "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-v1",
-      "timing_run": "runs/ivsn-reference-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
       "found": 34,
       "found_rate": 0.5151515151515151,
       "found_ci95": [
-        0.4,
-        0.6307692307692307
+        0.3939393939393939,
+        0.6363636363636364
       ],
       "complete_searches": 66,
-      "p50_search_s": 1.365467499999795,
-      "p95_search_s": 2.3635368227260187,
+      "p50_search_s": 1.139179416524712,
+      "p95_search_s": 1.521954968717182,
       "usd_per_scene": 0.001979345454545416,
-      "http_attempts": 1009
+      "http_attempts": 1049
     },
     {
-      "model": "jev",
-      "name": "Jev 1.14",
-      "model_id": "typesafe/jev-1.14",
-      "tile_px": 192,
+      "model": "clef-flash",
+      "run_model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t192-v1",
-      "timing_run": "runs/ivsn-reference-t192-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
-      "found": 44,
-      "found_rate": 0.6666666666666666,
+      "found": 27,
+      "found_rate": 0.4090909090909091,
       "found_ci95": [
-        0.5507246376811594,
-        0.7846153846153846
+        0.2878787878787879,
+        0.5303030303030303
       ],
       "complete_searches": 66,
-      "p50_search_s": 1.38130272901617,
-      "p95_search_s": 2.5323415412276518,
-      "usd_per_scene": 0.003775082818181867,
-      "http_attempts": 4681
+      "p50_search_s": 1.3221416249871254,
+      "p95_search_s": 1.8514269787119702,
+      "usd_per_scene": 0.0003133963636363583,
+      "http_attempts": 1008
     },
     {
-      "model": "decider",
-      "name": "Decider V1.1 27B",
-      "model_id": "perplexity/pplx-decider-v1.1-27b",
-      "tile_px": 192,
+      "model": "clef-omni",
+      "run_model": "clef-omni",
+      "name": "Clef Omni",
+      "model_id": "cloudflare/clef-omni",
+      "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t192-v1",
-      "timing_run": "runs/ivsn-reference-t192-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
-      "found": 47,
-      "found_rate": 0.7121212121212122,
+      "found": 25,
+      "found_rate": 0.3787878787878788,
       "found_ci95": [
-        0.6,
-        0.8153846153846154
+        0.25757575757575757,
+        0.5
       ],
       "complete_searches": 66,
-      "p50_search_s": 5.3862992290523835,
-      "p95_search_s": 9.817773604212562,
-      "usd_per_scene": 0.0006916500000000124,
-      "http_attempts": 4611
+      "p50_search_s": 0.7331424580188468,
+      "p95_search_s": 1.2207208851759788,
+      "usd_per_scene": 0.0012302181818181664,
+      "http_attempts": 1008
     },
     {
       "model": "luna",
+      "run_model": "luna",
       "name": "GPT-6 Luna Decisions",
       "model_id": "openai/gpt-6-luna-decisions",
-      "tile_px": 192,
+      "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t192-v1",
-      "timing_run": "runs/ivsn-reference-t192-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
       "found": 26,
       "found_rate": 0.3939393939393939,
       "found_ci95": [
-        0.27692307692307694,
+        0.2878787878787879,
         0.5151515151515151
       ],
       "complete_searches": 66,
-      "p50_search_s": 1.850205187452957,
-      "p95_search_s": 2.755605875281617,
-      "usd_per_scene": 0.004048909090909182,
-      "http_attempts": 4681
+      "p50_search_s": 0.4656418334925547,
+      "p95_search_s": 0.9885159892146476,
+      "usd_per_scene": 0.0008720727272727113,
+      "http_attempts": 1023
     },
     {
-      "model": "clef-flash",
-      "name": "Clef Flash",
-      "model_id": "cloudflare/clef-flash",
-      "tile_px": 192,
+      "model": "mercury",
+      "run_model": "mercury",
+      "name": "Mercury Decide",
+      "model_id": "inception/mercury-decide",
+      "tile_px": 384,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t192-v1",
-      "timing_run": "runs/ivsn-reference-t192-v1",
+      "run": "runs/v2-tiles-384",
+      "timing_run": "runs/v2-tiles-384",
       "passes": 1,
       "searches": 66,
-      "found": 42,
-      "found_rate": 0.6363636363636364,
+      "found": 33,
+      "found_rate": 0.5,
       "found_ci95": [
-        0.5151515151515151,
-        0.7538461538461538
+        0.3787878787878788,
+        0.6212121212121212
       ],
       "complete_searches": 66,
-      "p50_search_s": 4.888871437462512,
-      "p95_search_s": 7.619556958699832,
-      "usd_per_scene": 0.001433601818181787,
-      "http_attempts": 4612
-    },
-    {
-      "model": "clef",
-      "name": "Clef",
-      "model_id": "cloudflare/clef",
-      "tile_px": 192,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t192-v1",
-      "timing_run": "runs/ivsn-reference-t192-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 44,
-      "found_rate": 0.6666666666666666,
-      "found_ci95": [
-        0.5586990950226245,
-        0.7761194029850746
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 3.3324938124860637,
-      "p95_search_s": 4.976598010485759,
-      "usd_per_scene": 0.009054327272727009,
-      "http_attempts": 4612
-    },
-    {
-      "model": "clef-omni",
-      "name": "Clef Omni",
-      "model_id": "cloudflare/clef-omni",
-      "tile_px": 192,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t192-new-models-v1",
-      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 43,
-      "found_rate": 0.6515151515151515,
-      "found_ci95": [
-        0.5384615384615384,
-        0.7611940298507462
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 2.6255503540160134,
-      "p95_search_s": 3.6240332292509265,
-      "usd_per_scene": 0.005627515909091465,
-      "http_attempts": 4611
-    },
-    {
-      "model": "d1",
-      "name": "Liquid d1",
-      "model_id": "liquid/d1",
-      "tile_px": 192,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t192-new-models-v1",
-      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 41,
-      "found_rate": 0.6212121212121212,
-      "found_ci95": [
-        0.5074626865671642,
-        0.7384615384615385
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 2.2700658119865693,
-      "p95_search_s": 6.125643468665658,
-      "usd_per_scene": 0.0008215963636363388,
-      "http_attempts": 4611
+      "p50_search_s": 0.4537882290314883,
+      "p95_search_s": 0.7267881767184008,
+      "usd_per_scene": 0.00014186515151515117,
+      "http_attempts": 1038
     },
     {
       "model": "d1-ultra",
+      "run_model": "d1-ultra",
       "name": "Liquid d1-ultra",
       "model_id": "liquid/d1-ultra",
       "tile_px": 192,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t192-new-models-v1",
-      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
       "passes": 1,
       "searches": 66,
       "found": 50,
       "found_rate": 0.7575757575757576,
       "found_ci95": [
-        0.6461538461538462,
-        0.8507462686567164
+        0.6515151515151515,
+        0.8636363636363636
       ],
       "complete_searches": 66,
-      "p50_search_s": 1.7072112294845283,
-      "p95_search_s": 2.6063246150151826,
+      "p50_search_s": 1.0601572086452506,
+      "p95_search_s": 1.6640921874495689,
       "usd_per_scene": 0.0017253523636364724,
+      "http_attempts": 4741
+    },
+    {
+      "model": "d1",
+      "run_model": "d1",
+      "name": "Liquid d1",
+      "model_id": "liquid/d1",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
+      "passes": 1,
+      "searches": 66,
+      "found": 40,
+      "found_rate": 0.6060606060606061,
+      "found_ci95": [
+        0.48484848484848486,
+        0.7272727272727273
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.385305687552318,
+      "p95_search_s": 2.756990009540459,
+      "usd_per_scene": 0.0008215963636363388,
       "http_attempts": 4611
     },
     {
+      "model": "decider-1.2",
+      "run_model": "decider-1.2",
+      "name": "Decider V1.2",
+      "model_id": "perplexity/pplx-decider-v1.2",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.5909090909090909,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.6079218529630452,
+      "p95_search_s": 2.7592365012096707,
+      "usd_per_scene": 0.0006916500000000124,
+      "http_attempts": 4681
+    },
+    {
+      "model": "decider-flash-1.2",
+      "run_model": "decider-flash-1.2",
+      "name": "Decider Flash V1.2",
+      "model_id": "perplexity/pplx-decider-flash-v1.2",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
+      "passes": 1,
+      "searches": 66,
+      "found": 44,
+      "found_rate": 0.6666666666666666,
+      "found_ci95": [
+        0.5454545454545454,
+        0.7878787878787878
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 0.8904198966920376,
+      "p95_search_s": 1.2290222493174952,
+      "usd_per_scene": 0.0003458250000000062,
+      "http_attempts": 7523
+    },
+    {
       "model": "span-02",
+      "run_model": "span-02",
       "name": "Respan Span-02",
       "model_id": "respan/span-02",
       "tile_px": 192,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t192-new-models-v1",
-      "timing_run": "runs/ivsn-reference-t192-new-models-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 43,
-      "found_rate": 0.6515151515151515,
-      "found_ci95": [
-        0.5384615384615384,
-        0.7611940298507462
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 1.511422291980125,
-      "p95_search_s": 2.888924707775004,
-      "usd_per_scene": 0.0005260731818181386,
-      "http_attempts": 4611
-    },
-    {
-      "model": "jev",
-      "name": "Jev 1.14",
-      "model_id": "typesafe/jev-1.14",
-      "tile_px": 192,
-      "method": "one-call",
-      "run": "runs/ivsn-jev-flat192-v1",
-      "timing_run": "runs/ivsn-jev-flat192-v1",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
       "passes": 1,
       "searches": 66,
       "found": 43,
       "found_rate": 0.6515151515151515,
       "found_ci95": [
         0.5303030303030303,
-        0.7692307692307693
+        0.7575757575757576
       ],
       "complete_searches": 66,
-      "p50_search_s": 1.1176023955922574,
-      "p95_search_s": 2.3124013957276475,
-      "usd_per_scene": 0.0014745360000000002,
-      "http_attempts": 66
+      "p50_search_s": 1.1550210834247991,
+      "p95_search_s": 2.127982853737194,
+      "usd_per_scene": 0.0005260731818181386,
+      "http_attempts": 4681
     },
     {
-      "model": "decider",
-      "name": "Decider V1.1 27B",
-      "model_id": "perplexity/pplx-decider-v1.1-27b",
-      "tile_px": 128,
+      "model": "jev-tiles",
+      "run_model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 192,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
       "passes": 1,
       "searches": 66,
-      "found": 47,
-      "found_rate": 0.7121212121212122,
+      "found": 43,
+      "found_rate": 0.6515151515151515,
       "found_ci95": [
-        0.6,
-        0.8153846153846154
+        0.5303030303030303,
+        0.7579545454545468
       ],
       "complete_searches": 66,
-      "p50_search_s": 9.100294917006977,
-      "p95_search_s": 16.762917989253765,
-      "usd_per_scene": 0.002158349999999562,
-      "http_attempts": 14392,
-      "rank": 3,
-      "beaten_by": [
-        "span-02"
-      ]
+      "p50_search_s": 0.8338523543789051,
+      "p95_search_s": 1.1674560202518478,
+      "usd_per_scene": 0.0037194283636364156,
+      "http_attempts": 4611
     },
     {
       "model": "clef",
+      "run_model": "clef",
       "name": "Clef",
       "model_id": "cloudflare/clef",
-      "tile_px": 128,
+      "tile_px": 192,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 46,
-      "found_rate": 0.696969696969697,
-      "found_ci95": [
-        0.5882352941176471,
-        0.8
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 9.77339883352397,
-      "p95_search_s": 14.990554082964081,
-      "usd_per_scene": 0.027406472727265662,
-      "http_attempts": 14015,
-      "rank": 6,
-      "beaten_by": [
-        "d1-ultra",
-        "d1",
-        "span-02",
-        "decider",
-        "jev"
-      ]
-    },
-    {
-      "model": "d1-ultra",
-      "name": "Liquid d1-ultra",
-      "model_id": "liquid/d1-ultra",
-      "tile_px": 128,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 55,
-      "found_rate": 0.8333333333333334,
-      "found_ci95": [
-        0.7384615384615385,
-        0.9117647058823529
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 4.052390646014828,
-      "p95_search_s": 6.155836510297377,
-      "usd_per_scene": 0.005376244363635196,
-      "http_attempts": 14371,
-      "rank": 1,
-      "beaten_by": []
-    },
-    {
-      "model": "clef-omni",
-      "name": "Clef Omni",
-      "model_id": "cloudflare/clef-omni",
-      "tile_px": 128,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
       "passes": 1,
       "searches": 66,
       "found": 44,
@@ -753,155 +893,479 @@
         0.7727272727272727
       ],
       "complete_searches": 66,
-      "p50_search_s": 6.964761499548331,
-      "p95_search_s": 9.082865926699014,
-      "usd_per_scene": 0.017033884090907503,
-      "http_attempts": 13972,
-      "rank": 8,
-      "beaten_by": [
-        "d1-ultra",
-        "d1",
-        "span-02",
-        "jev"
-      ]
-    },
-    {
-      "model": "span-02",
-      "name": "Respan Span-02",
-      "model_id": "respan/span-02",
-      "tile_px": 128,
-      "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 47,
-      "found_rate": 0.7121212121212122,
-      "found_ci95": [
-        0.5970149253731343,
-        0.8208955223880597
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 3.760624541551806,
-      "p95_search_s": 6.240717708191369,
-      "usd_per_scene": 0.001958028181818813,
-      "http_attempts": 17368,
-      "rank": 3,
-      "beaten_by": []
+      "p50_search_s": 2.8433750834083185,
+      "p95_search_s": 5.800831052241847,
+      "usd_per_scene": 0.009054327272727009,
+      "http_attempts": 4648
     },
     {
       "model": "clef-flash",
+      "run_model": "clef-flash",
       "name": "Clef Flash",
       "model_id": "cloudflare/clef-flash",
-      "tile_px": 128,
+      "tile_px": 192,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
+      "passes": 1,
+      "searches": 66,
+      "found": 42,
+      "found_rate": 0.6363636363636364,
+      "found_ci95": [
+        0.5151515151515151,
+        0.7575757575757576
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.8441467076190747,
+      "p95_search_s": 4.332755031762645,
+      "usd_per_scene": 0.001433601818181787,
+      "http_attempts": 4611
+    },
+    {
+      "model": "clef-omni",
+      "run_model": "clef-omni",
+      "name": "Clef Omni",
+      "model_id": "cloudflare/clef-omni",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
+      "passes": 1,
+      "searches": 66,
+      "found": 43,
+      "found_rate": 0.6515151515151515,
+      "found_ci95": [
+        0.5303030303030303,
+        0.7575757575757576
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.1699000203516334,
+      "p95_search_s": 2.8246637075499166,
+      "usd_per_scene": 0.005627515909091465,
+      "http_attempts": 4611
+    },
+    {
+      "model": "luna",
+      "run_model": "luna",
+      "name": "GPT-6 Luna Decisions",
+      "model_id": "openai/gpt-6-luna-decisions",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
+      "passes": 1,
+      "searches": 66,
+      "found": 26,
+      "found_rate": 0.3939393939393939,
+      "found_ci95": [
+        0.2878787878787879,
+        0.5151515151515151
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.654782583063934,
+      "p95_search_s": 2.7850822712644003,
+      "usd_per_scene": 0.003989213636363752,
+      "http_attempts": 4611
+    },
+    {
+      "model": "mercury",
+      "run_model": "mercury",
+      "name": "Mercury Decide",
+      "model_id": "inception/mercury-decide",
+      "tile_px": 192,
+      "method": "parallel",
+      "run": "runs/v2-tiles-192",
+      "timing_run": "runs/v2-tiles-192",
       "passes": 1,
       "searches": 66,
       "found": 45,
       "found_rate": 0.6818181818181818,
       "found_ci95": [
-        0.5691791044776119,
+        0.5606060606060606,
         0.7878787878787878
       ],
       "complete_searches": 66,
-      "p50_search_s": 11.419104249973316,
-      "p95_search_s": 16.813920594053343,
-      "usd_per_scene": 0.004339358181818343,
-      "http_attempts": 13958,
-      "rank": 7,
-      "beaten_by": [
-        "d1",
-        "span-02",
-        "decider",
-        "jev"
-      ]
+      "p50_search_s": 1.7924750004895031,
+      "p95_search_s": 2.682478875038214,
+      "usd_per_scene": 0.0006490396969696995,
+      "http_attempts": 4891
+    },
+    {
+      "model": "d1-ultra",
+      "run_model": "d1-ultra",
+      "name": "Liquid d1-ultra",
+      "model_id": "liquid/d1-ultra",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 53,
+      "found_rate": 0.803030303030303,
+      "found_ci95": [
+        0.7121212121212122,
+        0.8939393939393939
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.3595324794296175,
+      "p95_search_s": 5.746288729918888,
+      "usd_per_scene": 0.005222455636362527,
+      "http_attempts": 14173,
+      "rank": 1,
+      "beaten_by": []
     },
     {
       "model": "d1",
+      "run_model": "d1",
       "name": "Liquid d1",
       "model_id": "liquid/d1",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
       "passes": 1,
       "searches": 66,
-      "found": 48,
-      "found_rate": 0.7272727272727273,
+      "found": 49,
+      "found_rate": 0.7424242424242424,
       "found_ci95": [
-        0.6153846153846154,
-        0.8333333333333334
+        0.6363636363636364,
+        0.8484848484848485
       ],
       "complete_searches": 66,
-      "p50_search_s": 5.981186792021617,
-      "p95_search_s": 11.39484152154182,
-      "usd_per_scene": 0.0026007418181817252,
-      "http_attempts": 14603,
+      "p50_search_s": 4.516558956995141,
+      "p95_search_s": 6.766055831831181,
+      "usd_per_scene": 0.0024868836363635474,
+      "http_attempts": 13957,
       "rank": 2,
       "beaten_by": []
     },
     {
-      "model": "luna",
-      "name": "GPT-6 Luna Decisions",
-      "model_id": "openai/gpt-6-luna-decisions",
+      "model": "decider-1.2",
+      "run_model": "decider-1.2",
+      "name": "Decider V1.2",
+      "model_id": "perplexity/pplx-decider-v1.2",
       "tile_px": 128,
       "method": "parallel",
-      "run": "runs/ivsn-reference-t128-v1",
-      "timing_run": "runs/ivsn-reference-t128-v1",
-      "passes": 1,
-      "searches": 66,
-      "found": 35,
-      "found_rate": 0.5303030303030303,
-      "found_ci95": [
-        0.4116978609625669,
-        0.6470588235294118
-      ],
-      "complete_searches": 66,
-      "p50_search_s": 5.1596277500502765,
-      "p95_search_s": 13.374798677221406,
-      "usd_per_scene": 0.01387097424242643,
-      "http_attempts": 16039,
-      "rank": 9,
-      "beaten_by": [
-        "d1-ultra",
-        "span-02",
-        "jev"
-      ]
-    },
-    {
-      "model": "jev",
-      "name": "Jev 1.14",
-      "model_id": "typesafe/jev-1.14",
-      "tile_px": 128,
-      "method": "one-call",
-      "run": "runs/ivsn-jev-flat128-v2",
-      "timing_run": "runs/ivsn-jev-flat128-v1",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
       "passes": 1,
       "searches": 66,
       "found": 47,
       "found_rate": 0.7121212121212122,
       "found_ci95": [
-        0.6,
+        0.5909090909090909,
         0.8181818181818182
       ],
       "complete_searches": 66,
-      "p50_search_s": 2.61264685401693,
-      "p95_search_s": 4.864894239988644,
-      "usd_per_scene": 0.004094859363636363,
+      "p50_search_s": 4.591406832507346,
+      "p95_search_s": 5.782544698449783,
+      "usd_per_scene": 0.002093549999999515,
+      "http_attempts": 13957,
+      "rank": 5,
+      "beaten_by": [
+        "decider-flash-1.2",
+        "span-02"
+      ]
+    },
+    {
+      "model": "decider-flash-1.2",
+      "run_model": "decider-flash-1.2",
+      "name": "Decider Flash V1.2",
+      "model_id": "perplexity/pplx-decider-flash-v1.2",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.5909090909090909,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.6137990414281376,
+      "p95_search_s": 3.548495258699404,
+      "usd_per_scene": 0.0010467749999997576,
+      "http_attempts": 14934,
+      "rank": 5,
+      "beaten_by": []
+    },
+    {
+      "model": "span-02",
+      "run_model": "span-02",
+      "name": "Respan Span-02",
+      "model_id": "respan/span-02",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6056818181818183,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.3082629156997427,
+      "p95_search_s": 4.620119823724963,
+      "usd_per_scene": 0.0015923668181821783,
+      "http_attempts": 14173,
+      "rank": 5,
+      "beaten_by": [
+        "decider-flash-1.2"
+      ]
+    },
+    {
+      "model": "jev-tiles",
+      "run_model": "jev",
+      "name": "Jev 1.14",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 48,
+      "found_rate": 0.7272727272727273,
+      "found_ci95": [
+        0.6212121212121212,
+        0.8333333333333334
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 2.387046895280946,
+      "p95_search_s": 2.8217845110048074,
+      "usd_per_scene": 0.01125850536363604,
+      "http_attempts": 13957,
+      "rank": 3,
+      "beaten_by": [
+        "jev-batched"
+      ]
+    },
+    {
+      "model": "clef",
+      "run_model": "clef",
+      "name": "Clef",
+      "model_id": "cloudflare/clef",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 46,
+      "found_rate": 0.696969696969697,
+      "found_ci95": [
+        0.5757575757575758,
+        0.803030303030303
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 8.194618894951418,
+      "p95_search_s": 11.09564029154717,
+      "usd_per_scene": 0.027406472727265662,
+      "http_attempts": 14056,
+      "rank": 9,
+      "beaten_by": [
+        "d1-ultra",
+        "d1",
+        "jev-batched",
+        "jev-tiles",
+        "decider-flash-1.2",
+        "span-02",
+        "mercury",
+        "decider-1.2"
+      ]
+    },
+    {
+      "model": "clef-flash",
+      "run_model": "clef-flash",
+      "name": "Clef Flash",
+      "model_id": "cloudflare/clef-flash",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 45,
+      "found_rate": 0.6818181818181818,
+      "found_ci95": [
+        0.5606060606060606,
+        0.7878787878787878
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 13.545885894447565,
+      "p95_search_s": 18.145023436954943,
+      "usd_per_scene": 0.004339358181818343,
+      "http_attempts": 14069,
+      "rank": 10,
+      "beaten_by": [
+        "d1",
+        "decider-flash-1.2",
+        "span-02",
+        "mercury",
+        "decider-1.2",
+        "jev"
+      ]
+    },
+    {
+      "model": "clef-omni",
+      "run_model": "clef-omni",
+      "name": "Clef Omni",
+      "model_id": "cloudflare/clef-omni",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 44,
+      "found_rate": 0.6666666666666666,
+      "found_ci95": [
+        0.5454545454545454,
+        0.7727272727272727
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 6.0165620216866955,
+      "p95_search_s": 6.881022426474374,
+      "usd_per_scene": 0.017033884090907503,
+      "http_attempts": 13957,
+      "rank": 12,
+      "beaten_by": [
+        "d1-ultra",
+        "d1",
+        "jev-batched",
+        "jev-tiles",
+        "decider-flash-1.2",
+        "span-02",
+        "mercury",
+        "decider-1.2",
+        "jev"
+      ]
+    },
+    {
+      "model": "luna",
+      "run_model": "luna",
+      "name": "GPT-6 Luna Decisions",
+      "model_id": "openai/gpt-6-luna-decisions",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 35,
+      "found_rate": 0.5303030303030303,
+      "found_ci95": [
+        0.4090909090909091,
+        0.6515151515151515
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 3.128552562557161,
+      "p95_search_s": 3.851279813912697,
+      "usd_per_scene": 0.012074919696970875,
+      "http_attempts": 14173,
+      "rank": 13,
+      "beaten_by": [
+        "jev-batched",
+        "jev-tiles",
+        "decider-flash-1.2",
+        "jev"
+      ]
+    },
+    {
+      "model": "mercury",
+      "run_model": "mercury",
+      "name": "Mercury Decide",
+      "model_id": "inception/mercury-decide",
+      "tile_px": 128,
+      "method": "parallel",
+      "run": "runs/v2-tiles-128",
+      "timing_run": "runs/v2-tiles-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 47,
+      "found_rate": 0.7121212121212122,
+      "found_ci95": [
+        0.6060606060606061,
+        0.8181818181818182
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 4.751325957360677,
+      "p95_search_s": 6.171600595029304,
+      "usd_per_scene": 0.001964317878787847,
+      "http_attempts": 17200,
+      "rank": 5,
+      "beaten_by": [
+        "decider-flash-1.2",
+        "span-02"
+      ]
+    },
+    {
+      "model": "jev",
+      "run_model": "jev",
+      "name": "Jev 1.14 (Choice)",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "one-call",
+      "run": "runs/v2c-jev-choice-128",
+      "timing_run": "runs/v2c-jev-choice-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 45,
+      "found_rate": 0.6818181818181818,
+      "found_ci95": [
+        0.5757575757575758,
+        0.7878787878787878
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.5098298955126666,
+      "p95_search_s": 1.8394803537230473,
+      "usd_per_scene": 0.004094703454545453,
+      "http_attempts": 66,
+      "rank": 10,
+      "beaten_by": []
+    },
+    {
+      "model": "jev-batched",
+      "run_model": "jev",
+      "name": "Jev 1.14 (yes/no, batched)",
+      "model_id": "typesafe/jev-1.14",
+      "tile_px": 128,
+      "method": "batched",
+      "run": "runs/v2c-jev-batched-128",
+      "timing_run": "runs/v2c-jev-batched-128",
+      "passes": 1,
+      "searches": 66,
+      "found": 48,
+      "found_rate": 0.7272727272727273,
+      "found_ci95": [
+        0.6212121212121212,
+        0.8333333333333334
+      ],
+      "complete_searches": 66,
+      "p50_search_s": 1.544920437503606,
+      "p95_search_s": 2.2146997187519446,
+      "usd_per_scene": 0.005089873090909091,
       "http_attempts": 66,
       "rank": 3,
       "beaten_by": []
     }
   ],
   "not_included": {
-    "inception/mercury-decide": "The provider rate-limited even one request at a time.",
     "scaledown/classify-1": "The endpoint rejects images, although the catalog lists image input."
   },
   "notes": [
-    "Every model is scored on one pass.",
-    "Jev 1.14's answers and cost come from a pass run at 23:49 EDT on 2026-10-16, when TypeSafe answered about 1.2 s slower; its typical search time comes from its earlier pass at 14:13 EDT, close to the other models' 15:17 EDT run (timing_from).",
-    "Searches that hit a provider error were run again in full until they finished (resume --redo-failed). On 2026-10-17, 14 searches slower than 3x their model's median time (provider stalls) were also run again in full (resume --redo-slow 3); none changed found or missed."
+    "Every run is fresh, made on 2026-10-18 with the same tiles, prompts and settings, one pass per model. Earlier runs (2026-10-16 and the morning of 2026-10-18) are kept on disk but no longer used.",
+    "One request per tile: all 11 models in one run per tile size, one search at a time in a shuffled order, 16 tile requests in flight. Whole-scene methods (Jev 1.14 Choice and batched): one scene at a time, the same condition. Earlier whole-scene runs with several scenes in flight (runs/v2-*, v2b-*) are kept on disk but not used: the scenes slowed each other down (Jev: about 3.2 s instead of 1.5 s).",
+    "Time counts only successful requests (results.success_times): speed when the model works, not how reliable its provider is. Perplexity (Decider Flash V1.2) and Cloudflare (Clef, Clef Flash) rejected some requests with HTTP 429.",
+    "Searches that hit a provider error were run again in full (resume --redo-failed), as were searches slower than 3x their model's median time (resume --redo-slow 3: 3 at 128 px, 8 at 192 px, 16 at 384 px; none changed found or missed). At 128 px, 37 searches were first stopped by the 150,000-request safety cap and then finished in full.",
+    "Decider V1.1 27B was retired on OpenRouter by 2026-10-18 and is not included. Mercury Decide, left out on 2026-10-16 because the provider rate-limited every request, now works and is included.",
+    "Decider Flash V1.2 can also take a whole scene in one request, but Perplexity rate-limited those requests heavily (15 of 66 scenes failed at first, even one at a time), so the owner judged that test unfair and it is not shown (run kept at runs/v2c-flash-batched-128)."
   ]
 }
